@@ -93,7 +93,7 @@ const PickupPointPage: React.FC = () => {
       label: 'Name',
       render: (value: string) => (
         <div className="flex items-center">
-          <MapPin className="w-4 h-4 text-gray-400 mr-2" />
+          <MapPin className="w-4 h-4 text-primary-400 mr-2" />
           {value}
         </div>
       ),
@@ -115,14 +115,14 @@ const PickupPointPage: React.FC = () => {
         <div className="flex gap-2">
           <button
             onClick={() => handleEdit(row)}
-            className="text-blue-600 hover:text-blue-800"
+            className="p-2 text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 rounded-lg transition-colors"
             title="Edit"
           >
             <Edit className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleDelete(row.id)}
-            className="text-red-600 hover:text-red-800"
+            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
             title="Delete"
           >
             <Trash2 className="w-4 h-4" />
@@ -133,19 +133,19 @@ const PickupPointPage: React.FC = () => {
   ];
   return (
     <div className="space-y-6">
-      {}
-      <div className="flex justify-between items-center">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Pickup Points</h1>
-          <p className="text-gray-600">Manage transport pickup/drop locations</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Pickup Points</h1>
+          <p className="text-navy-300 mt-1">Manage transport pickup/drop locations</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Add Pickup Point
         </Button>
       </div>
-      {}
-      <div className="bg-white rounded-lg shadow">
+      {/* Table */}
+      <div className="bg-navy-800/50 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden">
         <Table columns={columns} data={pickupPoints} isLoading={loading} />
       </div>
       {}
@@ -193,12 +193,12 @@ const PickupPointPage: React.FC = () => {
               placeholder="e.g., 77.5946"
             />
           </div>
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
             <Button type="button" variant="secondary" onClick={closeModal}>
               Cancel
             </Button>
             <Button type="submit" isLoading={isSubmitting}>
-              {editingPoint ? 'Update' : 'Create'}
+              {editingPoint ? 'Update Point' : 'Create Point'}
             </Button>
           </div>
         </form>

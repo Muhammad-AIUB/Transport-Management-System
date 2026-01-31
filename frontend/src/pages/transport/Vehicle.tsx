@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'react-toastify';
-import { Plus, Edit, Trash2, Bus } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import { transportApi } from '../../services/transportApi';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
@@ -117,14 +117,14 @@ const VehiclePage: React.FC = () => {
         <div className="flex gap-2">
           <button
             onClick={() => handleEdit(row)}
-            className="text-blue-600 hover:text-blue-800"
+            className="p-2 text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 rounded-lg transition-colors"
             title="Edit"
           >
             <Edit className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleDelete(row.id)}
-            className="text-red-600 hover:text-red-800"
+            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
             title="Delete"
           >
             <Trash2 className="w-4 h-4" />
@@ -135,29 +135,31 @@ const VehiclePage: React.FC = () => {
   ];
   return (
     <div className="space-y-6">
-      {}
-      <div className="flex justify-between items-center">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Vehicles</h1>
-          <p className="text-gray-600">Manage transport vehicles and drivers</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Vehicles</h1>
+          <p className="text-navy-300 mt-1">Manage transport vehicles and drivers</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Add Vehicle
         </Button>
       </div>
-      {}
-      <div className="bg-white rounded-lg shadow">
+
+      {/* Table Card */}
+      <div className="bg-navy-800/50 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden">
         <Table columns={columns} data={vehicles} isLoading={loading} />
       </div>
-      {}
+
+      {/* Modal Form */}
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
         title={editingVehicle ? 'Edit Vehicle' : 'Add Vehicle'}
         size="lg"
       >
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Vehicle Number"
@@ -167,16 +169,16 @@ const VehiclePage: React.FC = () => {
               required
             />
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-navy-200 mb-2">
                 Vehicle Type
               </label>
               <select
                 {...register('vehicleType')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 bg-navy-800/50 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200"
               >
-                <option value="">Select type</option>
+                <option value="" className="bg-navy-800">Select type</option>
                 {VEHICLE_TYPES.map((type) => (
-                  <option key={type.value} value={type.value}>
+                  <option key={type.value} value={type.value} className="bg-navy-800">
                     {type.label}
                   </option>
                 ))}
@@ -195,64 +197,85 @@ const VehiclePage: React.FC = () => {
               error={errors.registrationNumber?.message}
             />
           </div>
-          <hr className="my-4" />
-          <h4 className="font-medium text-gray-900">Driver Information</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="Driver Name"
-              {...register('driverName')}
-              error={errors.driverName?.message}
-              required
-            />
-            <Input
-              label="Driver Phone"
-              {...register('driverPhone')}
-              error={errors.driverPhone?.message}
-              placeholder="10-digit phone number"
-              required
-            />
-            <Input
-              label="Driver License"
-              {...register('driverLicense')}
-              error={errors.driverLicense?.message}
-            />
+
+          {/* Section Divider */}
+          <div className="border-t border-white/5 pt-6">
+            <h4 className="font-semibold text-white mb-4 flex items-center">
+              <span className="w-1.5 h-1.5 bg-primary-500 rounded-full mr-2"></span>
+              Driver Information
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Driver Name"
+                {...register('driverName')}
+                error={errors.driverName?.message}
+                required
+              />
+              <Input
+                label="Driver Phone"
+                {...register('driverPhone')}
+                error={errors.driverPhone?.message}
+                placeholder="10-digit phone number"
+                required
+              />
+              <Input
+                label="Driver License"
+                {...register('driverLicense')}
+                error={errors.driverLicense?.message}
+              />
+            </div>
           </div>
-          <hr className="my-4" />
-          <h4 className="font-medium text-gray-900">Helper Information (Optional)</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="Helper Name"
-              {...register('helperName')}
-              error={errors.helperName?.message}
-            />
-            <Input
-              label="Helper Phone"
-              {...register('helperPhone')}
-              error={errors.helperPhone?.message}
-            />
+
+          {/* Section Divider */}
+          <div className="border-t border-white/5 pt-6">
+            <h4 className="font-semibold text-white mb-4 flex items-center">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2"></span>
+              Helper Information
+              <span className="ml-2 text-xs text-navy-400 font-normal">(Optional)</span>
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Helper Name"
+                {...register('helperName')}
+                error={errors.helperName?.message}
+              />
+              <Input
+                label="Helper Phone"
+                {...register('helperPhone')}
+                error={errors.helperPhone?.message}
+              />
+            </div>
           </div>
-          <hr className="my-4" />
-          <h4 className="font-medium text-gray-900">Documents</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="Insurance Expiry"
-              type="date"
-              {...register('insuranceExpiry')}
-              error={errors.insuranceExpiry?.message}
-            />
-            <Input
-              label="Fitness Expiry"
-              type="date"
-              {...register('fitnessExpiry')}
-              error={errors.fitnessExpiry?.message}
-            />
+
+          {/* Section Divider */}
+          <div className="border-t border-white/5 pt-6">
+            <h4 className="font-semibold text-white mb-4 flex items-center">
+              <span className="w-1.5 h-1.5 bg-amber-500 rounded-full mr-2"></span>
+              Documents
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Insurance Expiry"
+                type="date"
+                {...register('insuranceExpiry')}
+                error={errors.insuranceExpiry?.message}
+              />
+              <Input
+                label="Fitness Expiry"
+                type="date"
+                {...register('fitnessExpiry')}
+                error={errors.fitnessExpiry?.message}
+              />
+            </div>
           </div>
-          <div className="flex justify-end gap-3 pt-4">
+
+          {/* Form Actions */}
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
             <Button type="button" variant="secondary" onClick={closeModal}>
               Cancel
             </Button>
             <Button type="submit" isLoading={isSubmitting}>
-              {editingVehicle ? 'Update' : 'Create'}
+              {editingVehicle ? 'Update Vehicle' : 'Create Vehicle'}
             </Button>
           </div>
         </form>

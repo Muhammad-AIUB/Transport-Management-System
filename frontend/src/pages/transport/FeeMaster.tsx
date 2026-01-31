@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'react-toastify';
-import { Plus, Edit, Trash2, DollarSign, AlertCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, AlertCircle } from 'lucide-react';
 import { transportApi } from '../../services/transportApi';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
@@ -30,7 +30,6 @@ const FeeMasterPage: React.FC = () => {
     register,
     handleSubmit,
     reset,
-    control,
     formState: { errors, isSubmitting },
   } = useForm<FeeMasterFormData>({
     resolver: zodResolver(feeMasterSchema),
@@ -123,7 +122,7 @@ const FeeMasterPage: React.FC = () => {
       key: 'monthlyFee',
       label: 'Monthly Fee',
       render: (value: number) => (
-        <span className="font-semibold text-green-600">{formatCurrency(value)}</span>
+        <span className="font-semibold text-emerald-400">{formatCurrency(value)}</span>
       ),
     },
     { key: 'academicYear', label: 'Academic Year' },
@@ -135,14 +134,14 @@ const FeeMasterPage: React.FC = () => {
         <div className="flex gap-2">
           <button
             onClick={() => handleEdit(row)}
-            className="text-blue-600 hover:text-blue-800"
+            className="p-2 text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 rounded-lg transition-colors"
             title="Edit"
           >
             <Edit className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleDelete(row.id)}
-            className="text-red-600 hover:text-red-800"
+            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
             title="Delete"
           >
             <Trash2 className="w-4 h-4" />
@@ -153,32 +152,32 @@ const FeeMasterPage: React.FC = () => {
   ];
   return (
     <div className="space-y-6">
-      {}
-      <div className="flex justify-between items-center">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Transport Fee Master</h1>
-          <p className="text-gray-600">Configure monthly transport fees by route</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Transport Fee Master</h1>
+          <p className="text-navy-300 mt-1">Configure monthly transport fees by route</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Add Fee Structure
         </Button>
       </div>
-      {}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      {/* Info Card */}
+      <div className="bg-primary-500/10 border border-primary-500/20 rounded-xl p-4">
         <div className="flex items-start">
-          <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+          <AlertCircle className="w-5 h-5 text-primary-400 mt-0.5 mr-3 shrink-0" />
           <div>
-            <h3 className="font-medium text-blue-900">Important</h3>
-            <p className="text-sm text-blue-700 mt-1">
+            <h3 className="font-medium text-white">Important</h3>
+            <p className="text-sm text-navy-300 mt-1">
               Fee structures defined here are automatically applied when students are assigned to transport routes.
               Each route should have exactly one active fee structure per academic year.
             </p>
           </div>
         </div>
       </div>
-      {}
-      <div className="bg-white rounded-lg shadow">
+      {/* Table */}
+      <div className="bg-navy-800/50 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden">
         <Table columns={columns} data={feeMasters} isLoading={loading} />
       </div>
       {}
@@ -189,23 +188,23 @@ const FeeMasterPage: React.FC = () => {
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Route <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-navy-200 mb-2">
+              Route <span className="text-primary-400">*</span>
             </label>
             <select
               {...register('routeId')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 bg-navy-800/50 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!!editingFee}
             >
-              <option value="">Select a route</option>
+              <option value="" className="bg-navy-800">Select a route</option>
               {routes.map((route) => (
-                <option key={route.id} value={route.id}>
+                <option key={route.id} value={route.id} className="bg-navy-800">
                   {route.routeName} ({route.startPoint} → {route.endPoint})
                 </option>
               ))}
             </select>
             {errors.routeId && (
-              <p className="text-red-500 text-sm mt-1">{errors.routeId.message}</p>
+              <p className="text-red-400 text-sm mt-2">{errors.routeId.message}</p>
             )}
           </div>
           <Input
@@ -223,21 +222,21 @@ const FeeMasterPage: React.FC = () => {
             required
           />
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Academic Year <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-navy-200 mb-2">
+              Academic Year <span className="text-primary-400">*</span>
             </label>
             <select
               {...register('academicYear')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 bg-navy-800/50 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200"
             >
               {ACADEMIC_YEARS.map((year) => (
-                <option key={year} value={year}>
+                <option key={year} value={year} className="bg-navy-800">
                   {year}
                 </option>
               ))}
             </select>
             {errors.academicYear && (
-              <p className="text-red-500 text-sm mt-1">{errors.academicYear.message}</p>
+              <p className="text-red-400 text-sm mt-2">{errors.academicYear.message}</p>
             )}
           </div>
           <Input
@@ -246,12 +245,12 @@ const FeeMasterPage: React.FC = () => {
             error={errors.description?.message}
             placeholder="Additional notes about this fee structure"
           />
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
             <Button type="button" variant="secondary" onClick={closeModal}>
               Cancel
             </Button>
             <Button type="submit" isLoading={isSubmitting}>
-              {editingFee ? 'Update' : 'Create'}
+              {editingFee ? 'Update Fee' : 'Create Fee'}
             </Button>
           </div>
         </form>

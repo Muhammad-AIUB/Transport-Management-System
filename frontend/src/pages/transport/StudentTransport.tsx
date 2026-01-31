@@ -4,10 +4,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'react-toastify';
-import { Search, Plus, Edit, Trash2, X } from 'lucide-react';
+import { Search, Plus, X } from 'lucide-react';
 import transportApi from '@/services/transportApi';
 import Button from '@/components/common/Button';
-import Input from '@/components/common/Input';
 import Modal from '@/components/common/Modal';
 import Table from '@/components/common/Table';
 import type { Student, Route, PickupPoint, StudentTransportAssignment } from '@/types';
@@ -29,7 +28,6 @@ const StudentTransportPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [students, setStudents] = useState<Student[]>([]);
   const [routes, setRoutes] = useState<Route[]>([]);
-  const [pickupPoints, setPickupPoints] = useState<PickupPoint[]>([]);
   const [filteredPickupPoints, setFilteredPickupPoints] = useState<PickupPoint[]>([]);
 
   const {
@@ -137,9 +135,9 @@ const StudentTransportPage: React.FC = () => {
       label: 'Student',
       render: (_: any, row: StudentTransportAssignment) => (
         <div>
-          <div className="font-medium">{`${row.student.firstName} ${row.student.lastName}`}</div>
-          <div className="text-sm text-gray-500">{row.student.admissionNumber}</div>
-          <div className="text-sm text-gray-500">{`${row.student.class} ${row.student.section || ''}`}</div>
+          <div className="font-medium text-white">{`${row.student.firstName} ${row.student.lastName}`}</div>
+          <div className="text-sm text-navy-400">{row.student.admissionNumber}</div>
+          <div className="text-sm text-navy-400">{`${row.student.class} ${row.student.section || ''}`}</div>
         </div>
       ),
     },
@@ -148,8 +146,8 @@ const StudentTransportPage: React.FC = () => {
       label: 'Route',
       render: (_: any, row: StudentTransportAssignment) => (
         <div>
-          <div className="font-medium">{row.route.routeName}</div>
-          <div className="text-sm text-gray-500">{row.route.routeCode}</div>
+          <div className="font-medium text-white">{row.route.routeName}</div>
+          <div className="text-sm text-navy-400">{row.route.routeCode}</div>
         </div>
       ),
     },
@@ -158,8 +156,8 @@ const StudentTransportPage: React.FC = () => {
       label: 'Pickup Point',
       render: (_: any, row: StudentTransportAssignment) => (
         <div>
-          <div className="font-medium">{row.pickupPoint.name}</div>
-          <div className="text-sm text-gray-500">{row.pickupPoint.address}</div>
+          <div className="font-medium text-white">{row.pickupPoint.name}</div>
+          <div className="text-sm text-navy-400">{row.pickupPoint.address}</div>
         </div>
       ),
     },
@@ -178,10 +176,10 @@ const StudentTransportPage: React.FC = () => {
       label: 'Status',
       render: (value: string) => (
         <span
-          className={`px-2 py-1 text-xs font-semibold rounded-full ${
+          className={`px-2.5 py-1 text-xs font-semibold rounded-full ${
             value === 'ACTIVE'
-              ? 'bg-green-100 text-green-800'
-              : 'bg-red-100 text-red-800'
+              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+              : 'bg-red-500/20 text-red-400 border border-red-500/30'
           }`}
         >
           {value}
@@ -195,7 +193,7 @@ const StudentTransportPage: React.FC = () => {
         <div className="flex gap-2">
           <button
             onClick={() => handleDeactivate(row.id)}
-            className="text-red-600 hover:text-red-800"
+            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Deactivate"
             disabled={row.status !== 'ACTIVE'}
           >
@@ -206,20 +204,20 @@ const StudentTransportPage: React.FC = () => {
     },
   ];
   return (
-    <div className="p-6">
-      {}
-      <div className="flex justify-between items-center mb-6">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Student Transport</h1>
-          <p className="text-gray-600">Assign students to transport routes</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Student Transport</h1>
+          <p className="text-navy-300 mt-1">Assign students to transport routes</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Assign Student
         </Button>
       </div>
-      {}
-      <div className="bg-white rounded-lg shadow">
+      {/* Table */}
+      <div className="bg-navy-800/50 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden">
         <Table columns={columns} data={assignments} isLoading={loading} />
       </div>
       {}
@@ -235,29 +233,29 @@ const StudentTransportPage: React.FC = () => {
         size="lg"
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {}
+          {/* Student Search */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Search Student <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-navy-200 mb-2">
+              Search Student <span className="text-primary-400">*</span>
             </label>
             <div className="relative">
-              <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-4 top-3.5 w-4 h-4 text-navy-400" />
               <input
                 type="text"
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-11 pr-4 py-3 bg-navy-800/50 border border-white/10 rounded-xl text-white placeholder-navy-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200"
                 placeholder="Type admission number or name..."
                 value={searchQuery}
                 onChange={(e) => handleStudentSearch(e.target.value)}
               />
             </div>
-            {}
+            {/* Student dropdown */}
             {students.length > 0 && (
-              <div className="mt-2 max-h-48 overflow-y-auto border border-gray-300 rounded-lg">
+              <div className="mt-2 max-h-48 overflow-y-auto bg-navy-800/95 backdrop-blur-xl border border-white/10 rounded-xl">
                 {students.map((student) => (
                   <button
                     key={student.id}
                     type="button"
-                    className="w-full text-left px-4 py-2 hover:bg-gray-50 border-b last:border-b-0"
+                    className="w-full text-left px-4 py-3 hover:bg-white/5 border-b border-white/5 last:border-b-0 transition-colors"
                     onClick={() => {
                       setValue('studentId', student.id);
                       setSearchQuery(
@@ -266,10 +264,10 @@ const StudentTransportPage: React.FC = () => {
                       setStudents([]);
                     }}
                   >
-                    <div className="font-medium">
+                    <div className="font-medium text-white">
                       {student.firstName} {student.lastName}
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-navy-400">
                       {student.admissionNumber} | {student.class} {student.section}
                     </div>
                   </button>
@@ -277,101 +275,101 @@ const StudentTransportPage: React.FC = () => {
               </div>
             )}
             {errors.studentId && (
-              <p className="mt-1 text-sm text-red-600">{errors.studentId.message}</p>
+              <p className="mt-2 text-sm text-red-400">{errors.studentId.message}</p>
             )}
           </div>
-          {}
+          {/* Route Select */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Route <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-navy-200 mb-2">
+              Route <span className="text-primary-400">*</span>
             </label>
             <select
               {...register('routeId')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 bg-navy-800/50 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200"
             >
-              <option value="">Select Route</option>
+              <option value="" className="bg-navy-800">Select Route</option>
               {routes.map((route) => (
-                <option key={route.id} value={route.id}>
+                <option key={route.id} value={route.id} className="bg-navy-800">
                   {route.routeName} ({route.routeCode})
                 </option>
               ))}
             </select>
             {errors.routeId && (
-              <p className="mt-1 text-sm text-red-600">{errors.routeId.message}</p>
+              <p className="mt-2 text-sm text-red-400">{errors.routeId.message}</p>
             )}
           </div>
-          {}
+          {/* Pickup Point Select */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Pickup Point <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-navy-200 mb-2">
+              Pickup Point <span className="text-primary-400">*</span>
             </label>
             <select
               {...register('pickupPointId')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 bg-navy-800/50 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!selectedRouteId}
             >
-              <option value="">Select Pickup Point</option>
+              <option value="" className="bg-navy-800">Select Pickup Point</option>
               {filteredPickupPoints.map((point) => (
-                <option key={point.id} value={point.id}>
+                <option key={point.id} value={point.id} className="bg-navy-800">
                   {point.name} - {point.address}
                 </option>
               ))}
             </select>
             {errors.pickupPointId && (
-              <p className="mt-1 text-sm text-red-600">{errors.pickupPointId.message}</p>
+              <p className="mt-2 text-sm text-red-400">{errors.pickupPointId.message}</p>
             )}
           </div>
-          {}
+          {/* Shift Select */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-navy-200 mb-2">
               Shift
             </label>
             <select
               {...register('shift')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 bg-navy-800/50 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200"
             >
-              <option value="">Both</option>
-              <option value="Morning">Morning</option>
-              <option value="Evening">Evening</option>
+              <option value="" className="bg-navy-800">Both</option>
+              <option value="Morning" className="bg-navy-800">Morning</option>
+              <option value="Evening" className="bg-navy-800">Evening</option>
             </select>
           </div>
-          {}
+          {/* Valid From */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-navy-200 mb-2">
               Valid From
             </label>
             <input
               type="date"
               {...register('validFrom')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 bg-navy-800/50 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200"
             />
           </div>
-          {}
+          {/* Remarks */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-navy-200 mb-2">
               Remarks
             </label>
             <textarea
               {...register('remarks')}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 bg-navy-800/50 border border-white/10 rounded-xl text-white placeholder-navy-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200"
               placeholder="Optional notes..."
             />
           </div>
-          {}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-800">
+          {/* Info Card */}
+          <div className="bg-primary-500/10 border border-primary-500/20 rounded-xl p-4">
+            <p className="text-sm text-white">
               <strong>Note:</strong> When you assign a student to transport, the system will
               automatically:
             </p>
-            <ul className="mt-2 text-sm text-blue-700 list-disc list-inside space-y-1">
+            <ul className="mt-2 text-sm text-navy-300 list-disc list-inside space-y-1">
               <li>Calculate the monthly transport fee based on the selected route</li>
               <li>Generate a fee entry for the current month in the student's billing</li>
               <li>Set the due date to the 15th of the current month</li>
             </ul>
           </div>
-          {}
-          <div className="flex justify-end gap-3 pt-4">
+          {/* Form Actions */}
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
             <Button
               type="button"
               variant="secondary"

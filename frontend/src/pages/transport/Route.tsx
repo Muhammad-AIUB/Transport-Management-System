@@ -100,13 +100,13 @@ const RoutePage: React.FC = () => {
         <div className="flex gap-2">
           <button
             onClick={() => handleEdit(row)}
-            className="text-blue-600 hover:text-blue-800"
+            className="p-2 text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 rounded-lg transition-colors"
           >
             <Edit className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleDelete(row.id)}
-            className="text-red-600 hover:text-red-800"
+            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -115,15 +115,18 @@ const RoutePage: React.FC = () => {
     },
   ];
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Routes</h1>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Routes</h1>
+          <p className="text-navy-300 mt-1">Manage transport routes</p>
+        </div>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Add Route
         </Button>
       </div>
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-navy-800/50 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden">
         <Table columns={columns} data={routes} isLoading={loading} />
       </div>
       <Modal
@@ -147,32 +150,36 @@ const RoutePage: React.FC = () => {
             {...register('routeCode')}
             error={errors.routeCode?.message}
           />
-          <Input
-            label="Start Point"
-            {...register('startPoint')}
-            error={errors.startPoint?.message}
-            required
-          />
-          <Input
-            label="End Point"
-            {...register('endPoint')}
-            error={errors.endPoint?.message}
-            required
-          />
-          <Input
-            label="Distance (km)"
-            type="number"
-            step="0.1"
-            {...register('distance', { valueAsNumber: true })}
-            error={errors.distance?.message}
-          />
-          <Input
-            label="Estimated Duration (minutes)"
-            type="number"
-            {...register('estimatedDuration', { valueAsNumber: true })}
-            error={errors.estimatedDuration?.message}
-          />
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Start Point"
+              {...register('startPoint')}
+              error={errors.startPoint?.message}
+              required
+            />
+            <Input
+              label="End Point"
+              {...register('endPoint')}
+              error={errors.endPoint?.message}
+              required
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Distance (km)"
+              type="number"
+              step="0.1"
+              {...register('distance', { valueAsNumber: true })}
+              error={errors.distance?.message}
+            />
+            <Input
+              label="Estimated Duration (minutes)"
+              type="number"
+              {...register('estimatedDuration', { valueAsNumber: true })}
+              error={errors.estimatedDuration?.message}
+            />
+          </div>
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
             <Button
               type="button"
               variant="secondary"
@@ -181,7 +188,7 @@ const RoutePage: React.FC = () => {
               Cancel
             </Button>
             <Button type="submit" isLoading={isSubmitting}>
-              {editingRoute ? 'Update' : 'Create'}
+              {editingRoute ? 'Update Route' : 'Create Route'}
             </Button>
           </div>
         </form>

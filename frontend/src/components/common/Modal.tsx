@@ -34,23 +34,25 @@ const Modal: React.FC<ModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        className="fixed inset-0 bg-navy-950/80 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
       <div className="flex min-h-full items-center justify-center p-4">
         <div
-          className={`relative bg-white rounded-lg shadow-xl ${sizeClasses[size]} w-full`}
+          className={`relative bg-navy-800/95 backdrop-blur-xl rounded-2xl shadow-glass-lg border border-white/10 ${sizeClasses[size]} w-full animate-slide-up`}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between p-4 border-b">
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b border-white/5">
+            <h3 className="text-lg font-semibold text-white">{title}</h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="p-2 text-navy-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
+          {/* Body */}
           <div className="p-6">{children}</div>
         </div>
       </div>

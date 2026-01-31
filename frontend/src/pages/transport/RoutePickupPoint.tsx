@@ -124,44 +124,44 @@ const RoutePickupPointPage: React.FC = () => {
   const selectedRouteData = routes.find(r => r.id === selectedRoute);
   return (
     <div className="space-y-6">
-      {}
+      {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Route Pickup Points</h1>
-        <p className="text-gray-600">Assign and order pickup points for each route</p>
+        <h1 className="text-2xl font-bold text-white tracking-tight">Route Pickup Points</h1>
+        <p className="text-navy-300 mt-1">Assign and order pickup points for each route</p>
       </div>
-      {}
-      <div className="bg-white rounded-lg shadow p-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+      {/* Route Selection Card */}
+      <div className="bg-navy-800/50 backdrop-blur-sm rounded-2xl border border-white/5 p-6">
+        <label className="block text-sm font-medium text-navy-200 mb-2">
           Select Route
         </label>
         <select
           value={selectedRoute}
           onChange={(e) => setSelectedRoute(e.target.value)}
-          className="w-full md:w-96 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full md:w-96 px-4 py-3 bg-navy-800/50 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200"
         >
-          <option value="">-- Select a route --</option>
+          <option value="" className="bg-navy-800">-- Select a route --</option>
           {routes.map((route) => (
-            <option key={route.id} value={route.id}>
+            <option key={route.id} value={route.id} className="bg-navy-800">
               {route.routeName} ({route.startPoint} → {route.endPoint})
             </option>
           ))}
         </select>
       </div>
-      {}
+      {/* Route Pickup Points Card */}
       {selectedRoute && (
-        <div className="bg-white rounded-lg shadow">
-          {}
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex justify-between items-start">
+        <div className="bg-navy-800/50 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden">
+          {/* Route Info Header */}
+          <div className="p-6 border-b border-white/5">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
               <div className="flex items-center">
-                <div className="bg-blue-100 p-3 rounded-lg mr-4">
-                  <RouteIcon className="w-6 h-6 text-blue-600" />
+                <div className="bg-primary-500/20 p-3 rounded-xl mr-4">
+                  <RouteIcon className="w-6 h-6 text-primary-400" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-xl font-semibold text-white">
                     {selectedRouteData?.routeName}
                   </h2>
-                  <p className="text-gray-600">
+                  <p className="text-navy-300">
                     {selectedRouteData?.startPoint} → {selectedRouteData?.endPoint}
                   </p>
                 </div>
@@ -172,15 +172,23 @@ const RoutePickupPointPage: React.FC = () => {
               </Button>
             </div>
           </div>
-          {}
+          {/* Pickup Points List */}
           <div className="p-6">
             {loading ? (
-              <div className="text-center py-8 text-gray-500">Loading...</div>
+              <div className="flex flex-col items-center justify-center py-12">
+                <div className="relative">
+                  <div className="w-10 h-10 rounded-full border-2 border-primary-500/20"></div>
+                  <div className="absolute top-0 left-0 w-10 h-10 rounded-full border-2 border-transparent border-t-primary-500 animate-spin"></div>
+                </div>
+                <p className="mt-4 text-sm text-navy-400">Loading...</p>
+              </div>
             ) : routePickupPoints.length === 0 ? (
-              <div className="text-center py-8">
-                <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No pickup points assigned to this route yet.</p>
-                <p className="text-sm text-gray-400 mt-1">
+              <div className="text-center py-12">
+                <div className="p-4 rounded-2xl bg-navy-700/50 w-fit mx-auto mb-4">
+                  <MapPin className="w-10 h-10 text-navy-500" />
+                </div>
+                <p className="text-navy-300 font-medium">No pickup points assigned to this route yet.</p>
+                <p className="text-sm text-navy-500 mt-1">
                   Click "Add Pickup Point" to get started.
                 </p>
               </div>
@@ -191,31 +199,31 @@ const RoutePickupPointPage: React.FC = () => {
                   .map((rpp, index) => (
                     <div
                       key={rpp.id}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
+                      className="flex items-center justify-between p-4 bg-navy-900/50 rounded-xl border border-white/5 hover:border-white/10 transition-colors"
                     >
                       <div className="flex items-center">
-                        <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold mr-4">
+                        <div className="w-9 h-9 rounded-xl bg-linear-to-br from-primary-500 to-primary-600 text-white flex items-center justify-center font-bold mr-4 text-sm shadow-lg">
                           {rpp.sequenceOrder}
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-white">
                             {rpp.pickupPoint.name}
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-navy-400">
                             {rpp.pickupPoint.address}
                           </p>
                           {rpp.estimatedTime && (
-                            <p className="text-xs text-gray-400 mt-1">
+                            <p className="text-xs text-navy-500 mt-1">
                               Est. time: {rpp.estimatedTime}
                             </p>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
                         {index > 0 && (
                           <button
                             onClick={() => handleUpdateSequence(rpp.id, rpp.sequenceOrder - 1)}
-                            className="p-1 text-gray-400 hover:text-gray-600"
+                            className="p-2 text-navy-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                             title="Move up"
                           >
                             <ArrowUp className="w-4 h-4" />
@@ -224,7 +232,7 @@ const RoutePickupPointPage: React.FC = () => {
                         {index < routePickupPoints.length - 1 && (
                           <button
                             onClick={() => handleUpdateSequence(rpp.id, rpp.sequenceOrder + 1)}
-                            className="p-1 text-gray-400 hover:text-gray-600"
+                            className="p-2 text-navy-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                             title="Move down"
                           >
                             <ArrowDown className="w-4 h-4" />
@@ -232,7 +240,7 @@ const RoutePickupPointPage: React.FC = () => {
                         )}
                         <button
                           onClick={() => handleRemove(rpp.id)}
-                          className="p-1 text-red-400 hover:text-red-600 ml-2"
+                          className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors ml-1"
                           title="Remove"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -245,7 +253,7 @@ const RoutePickupPointPage: React.FC = () => {
           </div>
         </div>
       )}
-      {}
+      {/* Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -253,25 +261,25 @@ const RoutePickupPointPage: React.FC = () => {
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Pickup Point <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-navy-200 mb-2">
+              Pickup Point <span className="text-primary-400">*</span>
             </label>
             <select
               {...register('pickupPointId')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 bg-navy-800/50 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200"
             >
-              <option value="">Select pickup point</option>
+              <option value="" className="bg-navy-800">Select pickup point</option>
               {availablePickupPoints.map((pp) => (
-                <option key={pp.id} value={pp.id}>
+                <option key={pp.id} value={pp.id} className="bg-navy-800">
                   {pp.name} - {pp.address}
                 </option>
               ))}
             </select>
             {errors.pickupPointId && (
-              <p className="text-red-500 text-sm mt-1">{errors.pickupPointId.message}</p>
+              <p className="text-red-400 text-sm mt-2">{errors.pickupPointId.message}</p>
             )}
             {availablePickupPoints.length === 0 && (
-              <p className="text-yellow-600 text-sm mt-1">
+              <p className="text-amber-400 text-sm mt-2">
                 All pickup points are already assigned to this route.
               </p>
             )}
@@ -290,7 +298,7 @@ const RoutePickupPointPage: React.FC = () => {
             error={errors.estimatedTime?.message}
             placeholder="e.g., 8:00 AM"
           />
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
             <Button type="button" variant="secondary" onClick={closeModal}>
               Cancel
             </Button>

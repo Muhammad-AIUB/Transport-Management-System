@@ -91,14 +91,14 @@ export const NAV_ITEMS = [
 
 export const getStatusColor = (status: string): string => {
   const colors: Record<string, string> = {
-    ACTIVE: 'bg-green-100 text-green-800',
-    INACTIVE: 'bg-gray-100 text-gray-800',
-    SUSPENDED: 'bg-red-100 text-red-800',
-    PENDING: 'bg-yellow-100 text-yellow-800',
-    PAID: 'bg-green-100 text-green-800',
-    PARTIAL: 'bg-blue-100 text-blue-800',
-    OVERDUE: 'bg-red-100 text-red-800',
-    WAIVED: 'bg-gray-100 text-gray-800',
+    ACTIVE: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
+    INACTIVE: 'bg-navy-500/20 text-navy-300 border border-navy-500/30',
+    SUSPENDED: 'bg-red-500/20 text-red-400 border border-red-500/30',
+    PENDING: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
+    PAID: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
+    PARTIAL: 'bg-primary-500/20 text-primary-400 border border-primary-500/30',
+    OVERDUE: 'bg-red-500/20 text-red-400 border border-red-500/30',
+    WAIVED: 'bg-navy-500/20 text-navy-300 border border-navy-500/30',
   };
-  return colors[status] || 'bg-gray-100 text-gray-800';
+  return colors[status] || 'bg-navy-500/20 text-navy-300 border border-navy-500/30';
 };
