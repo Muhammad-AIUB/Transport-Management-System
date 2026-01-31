@@ -10,71 +10,277 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ============================================
+// EXISTING MODELS (আগে থেকে আছে ধরে নিচ্ছি)
+// ============================================
+
+model Student {
+  id                    String                  @id @default(uuid())
+  admissionNumber       String                  @unique
+  firstName             String
+  lastName              String
+  email                 String?
+  phone                 String?
+  class                 String
+  section               String?
+  rollNumber            String?
+  parentName            String?
+  parentPhone           String?
+  address               String?
+  isActive              Boolean                 @default(true)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  // Relations
+  feeAssignments        StudentFeeAssignment[]
+  transportAssignments  StudentTransportAssignment[]
+
+  @@index([admissionNumber])
+  @@index([class, section])
+}
+
+model FeeType {
+  id                    String                  @id @default(uuid())
+  name                  String                  @unique // e.g., "Tuition Fee", "Transport Fee", "Library Fee"
+  description           String?
+  category              String?                 // e.g., "Academic", "Transport", "Hostel"
+  isActive              Boolean                 @default(true)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  // Relations
+  feeMasters            FeeMaster[]
+}
+
 model FeeMaster {
-  id          Int      @id @default(autoincrement())
-  amount      Float
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                    String                  @id @default(uuid())
+  feeTypeId             String
+  amount                Decimal                 @db.Decimal(10, 2)
+  academicYear          String
+  class                 String?                 // null means applicable to all
+  applicableFrom        DateTime?
+  applicableTo          DateTime?
+  isActive              Boolean                 @default(true)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  // Relations
+  feeType               FeeType                 @relation(fields: [feeTypeId], references: [id])
+  studentAssignments    StudentFeeAssignment[]
+
+  @@index([feeTypeId])
+  @@index([academicYear, class])
 }
 
+model StudentFeeAssignment {
+  id                    String                  @id @default(uuid())
+  studentId             String
+  feeMasterId           String
+  assignedDate          DateTime                @default(now())
+  dueDate               DateTime?
+  amount                Decimal                 @db.Decimal(10, 2)
+  status                String                  @default("PENDING") // PENDING, PAID, OVERDUE
+  isPaid                Boolean                 @default(false)
+  paidAmount            Decimal                 @default(0) @db.Decimal(10, 2)
+  paidDate              DateTime?
+  month                 Int?                    // 1-12 for monthly fees
+  year                  Int?
+  remarks               String?
+  createdBy             String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  // Relations
+  student               Student                 @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  feeMaster             FeeMaster               @relation(fields: [feeMasterId], references: [id])
+
+  @@index([studentId])
+  @@index([feeMasterId])
+  @@index([status])
+  @@index([month, year])
+}
+
+// ============================================
+// TRANSPORT MODULE MODELS
+// ============================================
+
+// 1. Transport Fee Structure (Master Data)
+model TransportFeeMaster {
+  id                    String                  @id @default(uuid())
+  routeId               String?                 // null means zone-based pricing
+  zoneName              String?                 // e.g., "Zone A", "Zone B"
+  monthlyFee            Decimal                 @db.Decimal(10, 2)
+  description           String?
+  academicYear          String
+  isActive              Boolean                 @default(true)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  // Relations
+  route                 Route?                  @relation(fields: [routeId], references: [id], onDelete: SetNull)
+
+  @@index([routeId])
+  @@index([academicYear])
+}
+
+// 2. Pickup Points (Master Data)
 model PickupPoint {
-  id        Int      @id @default(autoincrement())
-  name      String
-  address   String
-  latitude  Float?
-  longitude Float?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                    String                  @id @default(uuid())
+  name                  String
+  address               String
+  latitude              Decimal?                @db.Decimal(10, 8)
+  longitude             Decimal?                @db.Decimal(11, 8)
+  landmark              String?
+  isActive              Boolean                 @default(true)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  // Relations
+  routePickupPoints     RoutePickupPoint[]
+  studentAssignments    StudentTransportAssignment[]
+
+  @@index([name])
 }
 
+// 3. Vehicles (Master Data)
 model Vehicle {
-  id          Int      @id @default(autoincrement())
-  number      String   @unique
-  capacity    Int
-  type        String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                    String                  @id @default(uuid())
+  vehicleNumber         String                  @unique
+  vehicleType           String?                 // Bus, Van, etc.
+  capacity              Int?
+  driverName            String
+  driverPhone           String
+  driverLicense         String?
+  helperName            String?
+  helperPhone           String?
+  registrationNumber    String?
+  insuranceExpiry       DateTime?
+  fitnessExpiry         DateTime?
+  isActive              Boolean                 @default(true)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  // Relations
+  routeAssignments      RouteVehicleAssignment[]
+
+  @@index([vehicleNumber])
 }
 
+// 4. Routes
 model Route {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                    String                  @id @default(uuid())
+  routeName             String                  @unique
+  routeCode             String?                 @unique
+  startPoint            String
+  endPoint              String
+  distance              Decimal?                @db.Decimal(10, 2) // in KM
+  estimatedDuration     Int?                    // in minutes
+  isActive              Boolean                 @default(true)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  // Relations
+  pickupPoints          RoutePickupPoint[]
+  vehicleAssignments    RouteVehicleAssignment[]
+  transportFees         TransportFeeMaster[]
+  studentAssignments    StudentTransportAssignment[]
+
+  @@index([routeName])
 }
 
+// 5. Route-Pickup Point Mapping (Junction Table with Sequence)
 model RoutePickupPoint {
-  id            Int         @id @default(autoincrement())
-  routeId       Int
-  pickupPointId Int
-  order         Int
-  route         Route       @relation(fields: [routeId], references: [id])
-  pickupPoint   PickupPoint @relation(fields: [pickupPointId], references: [id])
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id                    String                  @id @default(uuid())
+  routeId               String
+  pickupPointId         String
+  sequenceOrder         Int                     // Stop sequence: 1, 2, 3...
+  estimatedTime         String?                 // e.g., "08:00 AM"
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  // Relations
+  route                 Route                   @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  pickupPoint           PickupPoint             @relation(fields: [pickupPointId], references: [id], onDelete: Cascade)
+
+  @@unique([routeId, pickupPointId])
+  @@index([routeId])
+  @@index([pickupPointId])
+  @@index([sequenceOrder])
 }
 
-model RouteVehicle {
-  id        Int     @id @default(autoincrement())
-  routeId   Int
-  vehicleId Int
-  route     Route   @relation(fields: [routeId], references: [id])
-  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// 6. Route-Vehicle Assignment
+model RouteVehicleAssignment {
+  id                    String                  @id @default(uuid())
+  routeId               String
+  vehicleId             String
+  assignedDate          DateTime                @default(now())
+  validFrom             DateTime?
+  validTo               DateTime?
+  shift                 String?                 // Morning, Evening, Both
+  isActive              Boolean                 @default(true)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  // Relations
+  route                 Route                   @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  vehicle               Vehicle                 @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@unique([routeId, vehicleId, shift])
+  @@index([routeId])
+  @@index([vehicleId])
 }
 
-model StudentTransport {
-  id            Int         @id @default(autoincrement())
-  studentId     Int
-  routeId       Int
-  pickupPointId Int
-  feeMasterId   Int
-  route         Route       @relation(fields: [routeId], references: [id])
-  pickupPoint   PickupPoint @relation(fields: [pickupPointId], references: [id])
-  feeMaster     FeeMaster   @relation(fields: [feeMasterId], references: [id])
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+// 7. Student Transport Assignment (Critical Table)
+model StudentTransportAssignment {
+  id                    String                  @id @default(uuid())
+  studentId             String
+  routeId               String
+  pickupPointId         String
+  assignedDate          DateTime                @default(now())
+  validFrom             DateTime                @default(now())
+  validTo               DateTime?
+  shift                 String?                 // Morning, Evening, Both
+  monthlyFee            Decimal                 @db.Decimal(10, 2)
+  status                String                  @default("ACTIVE") // ACTIVE, INACTIVE, SUSPENDED
+  remarks               String?
+  createdBy             String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  // Relations
+  student               Student                 @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  route                 Route                   @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  pickupPoint           PickupPoint             @relation(fields: [pickupPointId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([routeId])
+  @@index([pickupPointId])
+  @@index([status])
+}
+
+// ============================================
+// RBAC MODELS (Optional but Recommended)
+// ============================================
+
+model User {
+  id                    String                  @id @default(uuid())
+  username              String                  @unique
+  email                 String                  @unique
+  password              String
+  firstName             String
+  lastName              String
+  role                  Role                    @default(STAFF)
+  isActive              Boolean                 @default(true)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  @@index([email])
+  @@index([username])
+}
+
+enum Role {
+  ADMIN
+  STAFF
+  TRANSPORT_MANAGER
+  ACCOUNTANT
 }
