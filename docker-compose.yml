@@ -1,11 +1,4 @@
-# Docker Compose for Transport Management System
-# Usage:
-#   docker-compose up -d              # Start all services
-#   docker-compose down               # Stop all services
-#   docker-compose logs -f backend    # View backend logs
-#   docker-compose exec backend npx prisma migrate deploy  # Run migrations
-
-version: '3.8'
+version: "3.8"
 
 services:
   # PostgreSQL Database
@@ -22,7 +15,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tms_user} -d ${POSTGRES_DB:-transport_management}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-tms_user} -d ${POSTGRES_DB:-transport_management}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -48,7 +45,15 @@ services:
     volumes:
       - ./backend/prisma:/app/prisma:ro
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:5000/api/health",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -66,7 +71,15 @@ services:
     ports:
       - "${FRONTEND_PORT:-3000}:80"
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:80",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
