@@ -1,7 +1,7 @@
 // src/services/transportApi.ts
 
 import api from './api';
-import {
+import type {
   ApiResponse,
   Route,
   PickupPoint,
@@ -11,7 +11,7 @@ import {
   RouteVehicleAssignment,
   StudentTransportAssignment,
   Student,
-} from '@/types';
+} from '../types';
 
 class TransportAPI {
   // Routes
