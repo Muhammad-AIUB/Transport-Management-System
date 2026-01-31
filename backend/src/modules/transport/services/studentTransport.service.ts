@@ -103,7 +103,7 @@ class StudentTransportService {
     }
 
 
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: any) => {
      
       const assignment = await tx.studentTransportAssignment.create({
         data: {
@@ -273,7 +273,7 @@ class StudentTransportService {
 
  
   async updateAssignment(id: string, data: Partial<AssignStudentTransportDTO>) {
-    const assignment = await this.getAssignmentById(id);
+    await this.getAssignmentById(id);
 
     const updated = await prisma.studentTransportAssignment.update({
       where: { id },
@@ -294,7 +294,7 @@ class StudentTransportService {
 
 
   async deactivateAssignment(id: string) {
-    const assignment = await this.getAssignmentById(id);
+    await this.getAssignmentById(id);
 
     const updated = await prisma.studentTransportAssignment.update({
       where: { id },

@@ -1,0 +1,98 @@
+# Docker Compose for Transport Management System
+# Usage:
+#   docker-compose up -d              # Start all services
+#   docker-compose down               # Stop all services
+#   docker-compose logs -f backend    # View backend logs
+#   docker-compose exec backend npx prisma migrate deploy  # Run migrations
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: tms-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tms_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tms_password}
+      POSTGRES_DB: ${POSTGRES_DB:-transport_management}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tms_user} -d ${POSTGRES_DB:-transport_management}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tms-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 5000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tms_user}:${POSTGRES_PASSWORD:-tms_password}@postgres:5432/${POSTGRES_DB:-transport_management}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      CURRENT_ACADEMIC_YEAR: ${CURRENT_ACADEMIC_YEAR:-2024-2025}
+    ports:
+      - "${BACKEND_PORT:-5000}:5000"
+    volumes:
+      - ./backend/prisma:/app/prisma:ro
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tms-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Prisma Studio (for development/debugging - optional)
+  prisma-studio:
+    image: node:20-alpine
+    container_name: tms-prisma-studio
+    profiles:
+      - tools
+    working_dir: /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tms_user}:${POSTGRES_PASSWORD:-tms_password}@postgres:5432/${POSTGRES_DB:-transport_management}?schema=public
+    ports:
+      - "${PRISMA_STUDIO_PORT:-5555}:5555"
+    volumes:
+      - ./backend:/app
+    command: sh -c "npm install && npx prisma studio --port 5555 --browser none"
+
+volumes:
+  postgres_data:
+    name: tms-postgres-data
+
+networks:
+  default:
+    name: tms-network

@@ -1,27 +1,32 @@
 import { Request, Response, NextFunction } from "express";
 import ApiError from "../utils/ApiError";
-import { Prisma } from "@prisma/client";
+
+interface PrismaError extends Error {
+  code: string;
+  meta?: {
+    target?: string[];
+  };
+}
 
 const errorHandler = (
-  err: any,
-  req: Request,
+  err: Error | ApiError | PrismaError,
+  _req: Request,
   res: Response,
-  next: NextFunction,
-) => {
-  let error = err;
+  _next: NextFunction,
+): void => {
+  let error: ApiError;
 
-  if (!(error instanceof ApiError)) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      error = handlePrismaError(error);
-    } else if (error instanceof Prisma.PrismaClientValidationError) {
-      error = new ApiError(400, "Validation Error: Invalid data provided");
-    } else if (error.name === "ZodError") {
-      error = handleZodError(error);
-    } else {
-      const statusCode = error.statusCode || 500;
-      const message = error.message || "Internal Server Error";
-      error = new ApiError(statusCode, message, false);
-    }
+  if (err instanceof ApiError) {
+    error = err;
+  } else if ('code' in err && typeof err.code === 'string' && err.code.startsWith('P')) {
+    // Prisma error handling
+    error = handlePrismaError(err as PrismaError);
+  } else if (err.name === "ZodError") {
+    error = handleZodError(err as any);
+  } else {
+    const statusCode = (err as any).statusCode || 500;
+    const message = err.message || "Internal Server Error";
+    error = new ApiError(statusCode, message, false);
   }
 
   if (process.env.NODE_ENV === "development") {
@@ -36,12 +41,10 @@ const errorHandler = (
   });
 };
 
-function handlePrismaError(
-  error: Prisma.PrismaClientKnownRequestError,
-): ApiError {
+function handlePrismaError(error: PrismaError): ApiError {
   switch (error.code) {
     case "P2002":
-      const field = (error.meta?.target as string[])?.join(", ") || "field";
+      const field = error.meta?.target?.join(", ") || "field";
       return new ApiError(409, `${field} already exists`);
 
     case "P2003":
@@ -58,8 +61,8 @@ function handlePrismaError(
   }
 }
 
-function handleZodError(error: any): ApiError {
-  const errors = error.errors.map((err: any) => ({
+function handleZodError(error: { errors: Array<{ path: string[]; message: string }> }): ApiError {
+  const errors = error.errors.map((err) => ({
     field: err.path.join("."),
     message: err.message,
   }));

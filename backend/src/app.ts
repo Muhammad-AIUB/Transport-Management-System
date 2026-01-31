@@ -13,23 +13,32 @@ const app: Application = express();
 // Middlewares
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: process.env.CORS_ORIGIN || ['http://localhost:5173', 'http://localhost:3000'],
   credentials: true,
 }));
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health Check
-app.get('/health', (req, res) => {
+// Health Check endpoints
+app.get('/health', (_req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
+});
+
+app.get('/api/health', (_req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
 
 // API Routes
 app.use('/api/transport', transportRoutes);
 
 // 404 Handler
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
   next(new ApiError(404, `Route ${req.originalUrl} not found`));
 });
 

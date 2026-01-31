@@ -159,7 +159,7 @@ class RouteService {
 
  
   async deleteRoute(id: string) {
-    const route = await this.getRouteById(id);
+    await this.getRouteById(id);
 
     
     const activeAssignments = await prisma.studentTransportAssignment.count({

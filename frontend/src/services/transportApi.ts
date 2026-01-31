@@ -169,4 +169,6 @@ class TransportAPI {
   }
 }
 
-export default new TransportAPI();
+const transportApiInstance = new TransportAPI();
+export { transportApiInstance as transportApi };
+export default transportApiInstance;
