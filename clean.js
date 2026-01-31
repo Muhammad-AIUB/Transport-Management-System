@@ -4,13 +4,13 @@ const path = require('path');
 function cleanFile(filePath) {
   let content = fs.readFileSync(filePath, 'utf8');
 
-  // Remove trailing whitespace
+  
   content = content.replace(/\s+$/gm, '');
 
-  // Reduce multiple blank lines to at most 2
+  
   content = content.replace(/\n{3,}/g, '\n\n');
 
-  // Handle JSDoc comments: temporarily replace with placeholders
+  
   const jsdocRegex = /\/\*\*.*?\*\//gs;
   const jsdocs = [];
   let match;
@@ -19,18 +19,18 @@ function cleanFile(filePath) {
   }
   content = content.replace(jsdocRegex, (match) => `___JSDOC_${jsdocs.indexOf(match)}___`);
 
-  // Remove single-line comments
+ 
   content = content.replace(/\/\/.*$/gm, '');
 
-  // Remove multi-line comments (non-JSDoc)
+  
   content = content.replace(/\/\*.*?\*\//gs, '');
 
-  // Restore JSDoc comments
+
   jsdocs.forEach((jsdoc, i) => {
     content = content.replace(`___JSDOC_${i}___`, jsdoc);
   });
 
-  // Write back to file
+ 
   fs.writeFileSync(filePath, content);
 }
 
