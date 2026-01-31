@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Create Fee Type for Transport
-  const transportFeeType = await prisma.feeType.upsert({
+  await prisma.feeType.upsert({
     where: { name: 'Transport Fee' },
     update: {},
     create: {
@@ -17,7 +17,7 @@ async function main() {
   });
 
   // Create Sample Students
-  const students = await Promise.all([
+  await Promise.all([
     prisma.student.create({
       data: {
         admissionNumber: 'STD001',
@@ -76,7 +76,7 @@ async function main() {
   ]);
 
   // Create Sample Vehicles
-  const vehicles = await Promise.all([
+  await Promise.all([
     prisma.vehicle.create({
       data: {
         vehicleNumber: 'DHK-GA-11-1234',
