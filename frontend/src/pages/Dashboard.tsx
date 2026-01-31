@@ -1,18 +1,15 @@
-// src/pages/Dashboard.tsx
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bus, Route, MapPin, Users, DollarSign, TrendingUp } from 'lucide-react';
 import { transportApi } from '../services/transportApi';
 import { ROUTES } from '../utils/constants';
-
 interface Stats {
   totalRoutes: number;
   totalVehicles: number;
   totalPickupPoints: number;
   totalStudentAssignments: number;
 }
-
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<Stats>({
     totalRoutes: 0,
@@ -21,7 +18,6 @@ const Dashboard: React.FC = () => {
     totalStudentAssignments: 0,
   });
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -31,7 +27,6 @@ const Dashboard: React.FC = () => {
           transportApi.getPickupPoints({ limit: 1 }),
           transportApi.getStudentTransportAssignments({ limit: 1 }),
         ]);
-
         setStats({
           totalRoutes: routesRes.data.pagination?.total || 0,
           totalVehicles: vehiclesRes.data.pagination?.total || 0,
@@ -44,10 +39,8 @@ const Dashboard: React.FC = () => {
         setLoading(false);
       }
     };
-
     fetchStats();
   }, []);
-
   const statCards = [
     {
       title: 'Total Routes',
@@ -78,7 +71,6 @@ const Dashboard: React.FC = () => {
       link: ROUTES.TRANSPORT.STUDENT_TRANSPORT,
     },
   ];
-
   const quickLinks = [
     {
       title: 'Assign Student',
@@ -99,16 +91,14 @@ const Dashboard: React.FC = () => {
       link: ROUTES.TRANSPORT.ROUTE_PICKUP_POINTS,
     },
   ];
-
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-gray-600">Welcome to the Transport Management System</p>
       </div>
-
-      {/* Stats Grid */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((stat) => (
           <Link
@@ -130,8 +120,7 @@ const Dashboard: React.FC = () => {
           </Link>
         ))}
       </div>
-
-      {/* Quick Actions */}
+      {}
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -152,8 +141,7 @@ const Dashboard: React.FC = () => {
           ))}
         </div>
       </div>
-
-      {/* Info Box */}
+      {}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start">
           <TrendingUp className="w-5 h-5 text-blue-600 mt-0.5 mr-3" />
@@ -170,5 +158,4 @@ const Dashboard: React.FC = () => {
     </div>
   );
 };
-
 export default Dashboard;

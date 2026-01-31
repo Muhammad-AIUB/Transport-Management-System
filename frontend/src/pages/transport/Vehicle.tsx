@@ -1,4 +1,3 @@
-// src/pages/transport/Vehicle.tsx
 
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -13,7 +12,6 @@ import Modal from '../../components/common/Modal';
 import Table from '../../components/common/Table';
 import { VEHICLE_TYPES } from '../../utils/constants';
 import type { Vehicle } from '../../types';
-
 const vehicleSchema = z.object({
   vehicleNumber: z.string().min(1, 'Vehicle number is required'),
   vehicleType: z.string().optional(),
@@ -27,15 +25,12 @@ const vehicleSchema = z.object({
   insuranceExpiry: z.string().optional(),
   fitnessExpiry: z.string().optional(),
 });
-
 type VehicleFormData = z.infer<typeof vehicleSchema>;
-
 const VehiclePage: React.FC = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
-
   const {
     register,
     handleSubmit,
@@ -44,11 +39,9 @@ const VehiclePage: React.FC = () => {
   } = useForm<VehicleFormData>({
     resolver: zodResolver(vehicleSchema),
   });
-
   useEffect(() => {
     fetchVehicles();
   }, []);
-
   const fetchVehicles = async () => {
     try {
       setLoading(true);
@@ -61,7 +54,6 @@ const VehiclePage: React.FC = () => {
       setLoading(false);
     }
   };
-
   const onSubmit = async (data: VehicleFormData) => {
     try {
       const payload = {
@@ -70,7 +62,6 @@ const VehiclePage: React.FC = () => {
         insuranceExpiry: data.insuranceExpiry ? new Date(data.insuranceExpiry).toISOString() : undefined,
         fitnessExpiry: data.fitnessExpiry ? new Date(data.fitnessExpiry).toISOString() : undefined,
       };
-
       if (editingVehicle) {
         await transportApi.updateVehicle(editingVehicle.id, payload);
         toast.success('Vehicle updated successfully');
@@ -84,7 +75,6 @@ const VehiclePage: React.FC = () => {
       toast.error(error.response?.data?.message || 'Operation failed');
     }
   };
-
   const handleEdit = (vehicle: Vehicle) => {
     setEditingVehicle(vehicle);
     reset({
@@ -94,10 +84,8 @@ const VehiclePage: React.FC = () => {
     });
     setIsModalOpen(true);
   };
-
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to deactivate this vehicle?')) return;
-
     try {
       await transportApi.deleteVehicle(id);
       toast.success('Vehicle deactivated successfully');
@@ -106,18 +94,16 @@ const VehiclePage: React.FC = () => {
       toast.error(error.response?.data?.message || 'Failed to delete vehicle');
     }
   };
-
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingVehicle(null);
     reset({});
   };
-
   const columns = [
     { key: 'vehicleNumber', label: 'Vehicle No.' },
     { key: 'vehicleType', label: 'Type' },
-    { 
-      key: 'capacity', 
+    {
+      key: 'capacity',
       label: 'Capacity',
       render: (value: number) => value ? `${value} seats` : 'N/A',
     },
@@ -147,10 +133,9 @@ const VehiclePage: React.FC = () => {
       ),
     },
   ];
-
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Vehicles</h1>
@@ -161,13 +146,11 @@ const VehiclePage: React.FC = () => {
           Add Vehicle
         </Button>
       </div>
-
-      {/* Table */}
+      {}
       <div className="bg-white rounded-lg shadow">
         <Table columns={columns} data={vehicles} isLoading={loading} />
       </div>
-
-      {/* Modal */}
+      {}
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -183,7 +166,6 @@ const VehiclePage: React.FC = () => {
               placeholder="e.g., KA-01-AB-1234"
               required
             />
-            
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Vehicle Type
@@ -200,7 +182,6 @@ const VehiclePage: React.FC = () => {
                 ))}
               </select>
             </div>
-
             <Input
               label="Seating Capacity"
               type="number"
@@ -208,17 +189,14 @@ const VehiclePage: React.FC = () => {
               error={errors.capacity?.message}
               placeholder="e.g., 40"
             />
-
             <Input
               label="Registration Number"
               {...register('registrationNumber')}
               error={errors.registrationNumber?.message}
             />
           </div>
-
           <hr className="my-4" />
           <h4 className="font-medium text-gray-900">Driver Information</h4>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Driver Name"
@@ -226,7 +204,6 @@ const VehiclePage: React.FC = () => {
               error={errors.driverName?.message}
               required
             />
-
             <Input
               label="Driver Phone"
               {...register('driverPhone')}
@@ -234,34 +211,28 @@ const VehiclePage: React.FC = () => {
               placeholder="10-digit phone number"
               required
             />
-
             <Input
               label="Driver License"
               {...register('driverLicense')}
               error={errors.driverLicense?.message}
             />
           </div>
-
           <hr className="my-4" />
           <h4 className="font-medium text-gray-900">Helper Information (Optional)</h4>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Helper Name"
               {...register('helperName')}
               error={errors.helperName?.message}
             />
-
             <Input
               label="Helper Phone"
               {...register('helperPhone')}
               error={errors.helperPhone?.message}
             />
           </div>
-
           <hr className="my-4" />
           <h4 className="font-medium text-gray-900">Documents</h4>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Insurance Expiry"
@@ -269,7 +240,6 @@ const VehiclePage: React.FC = () => {
               {...register('insuranceExpiry')}
               error={errors.insuranceExpiry?.message}
             />
-
             <Input
               label="Fitness Expiry"
               type="date"
@@ -277,7 +247,6 @@ const VehiclePage: React.FC = () => {
               error={errors.fitnessExpiry?.message}
             />
           </div>
-
           <div className="flex justify-end gap-3 pt-4">
             <Button type="button" variant="secondary" onClick={closeModal}>
               Cancel
@@ -291,5 +260,4 @@ const VehiclePage: React.FC = () => {
     </div>
   );
 };
-
 export default VehiclePage;

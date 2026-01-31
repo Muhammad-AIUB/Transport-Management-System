@@ -1,13 +1,9 @@
-// src/components/common/Input.tsx
-
 import React, { forwardRef } from 'react';
-
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   helperText?: string;
 }
-
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, helperText, className = '', ...props }, ref) => {
     return (
@@ -39,7 +35,5 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     );
   }
 );
-
 Input.displayName = 'Input';
-
 export default Input;

@@ -1,11 +1,8 @@
-// prisma/seed.ts
-
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create Fee Type for Transport
   await prisma.feeType.upsert({
     where: { name: 'Transport Fee' },
     update: {},
@@ -16,7 +13,6 @@ async function main() {
     },
   });
 
-  // Create Sample Students
   await Promise.all([
     prisma.student.create({
       data: {
@@ -50,7 +46,6 @@ async function main() {
     }),
   ]);
 
-  // Create Sample Pickup Points
   const pickupPoints = await Promise.all([
     prisma.pickupPoint.create({
       data: {
@@ -75,7 +70,6 @@ async function main() {
     }),
   ]);
 
-  // Create Sample Vehicles
   await Promise.all([
     prisma.vehicle.create({
       data: {
@@ -103,7 +97,6 @@ async function main() {
     }),
   ]);
 
-  // Create Sample Routes
   const routes = await Promise.all([
     prisma.route.create({
       data: {
@@ -127,7 +120,6 @@ async function main() {
     }),
   ]);
 
-  // Link Pickup Points to Routes
   await prisma.routePickupPoint.createMany({
     data: [
       {
@@ -151,9 +143,8 @@ async function main() {
     ],
   });
 
-  // Create Transport Fee Structures
   const currentYear = process.env.CURRENT_ACADEMIC_YEAR || '2024-2025';
-  
+
   await prisma.transportFeeMaster.createMany({
     data: [
       {

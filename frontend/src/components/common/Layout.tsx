@@ -1,5 +1,3 @@
-// src/components/common/Layout.tsx
-
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
@@ -7,19 +5,12 @@ import Navbar from './Navbar';
 
 const Layout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="flex">
-        {/* Sidebar */}
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-        {/* Main content */}
         <div className="flex-1 flex flex-col min-h-screen lg:ml-0">
-          {/* Navbar */}
           <Navbar onMenuClick={() => setSidebarOpen(true)} />
-
-          {/* Page content */}
           <main className="flex-1 p-4 lg:p-6 overflow-auto">
             <Outlet />
           </main>
@@ -28,5 +19,4 @@ const Layout: React.FC = () => {
     </div>
   );
 };
-
 export default Layout;

@@ -1,5 +1,3 @@
-// src/components/common/Sidebar.tsx
-
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
@@ -14,13 +12,11 @@ import {
   X,
 } from 'lucide-react';
 import { NAV_ITEMS, APP_NAME } from '../../utils/constants';
-
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Icon mapping
 const iconMap: Record<string, React.ElementType> = {
   LayoutDashboard,
   Route,
@@ -31,19 +27,15 @@ const iconMap: Record<string, React.ElementType> = {
   Link,
   Users,
 };
-
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   return (
     <>
-      {/* Mobile overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
           onClick={onClose}
         />
       )}
-
-      {/* Sidebar */}
       <aside
         className={`
           fixed top-0 left-0 z-30 h-full w-64 bg-gray-900 text-white
@@ -52,7 +44,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        {/* Header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">
           <div className="flex items-center space-x-2">
             <Bus className="w-8 h-8 text-blue-500" />
@@ -65,8 +56,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <X className="w-6 h-6" />
           </button>
         </div>
-
-        {/* Navigation */}
         <nav className="mt-4 px-2">
           <ul className="space-y-1">
             {NAV_ITEMS.map((item) => {
@@ -92,8 +81,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             })}
           </ul>
         </nav>
-
-        {/* Footer */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
           <p className="text-xs text-gray-500 text-center">
             {APP_NAME} v1.0
@@ -103,5 +90,4 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     </>
   );
 };
-
 export default Sidebar;

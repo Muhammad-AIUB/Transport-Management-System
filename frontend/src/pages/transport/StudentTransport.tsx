@@ -1,4 +1,3 @@
-// src/pages/transport/StudentTransport.tsx
 
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -13,7 +12,6 @@ import Modal from '@/components/common/Modal';
 import Table from '@/components/common/Table';
 import type { Student, Route, PickupPoint, StudentTransportAssignment } from '@/types';
 
-// Validation Schema
 const assignmentSchema = z.object({
   studentId: z.string().min(1, 'Student is required'),
   routeId: z.string().min(1, 'Route is required'),
@@ -22,11 +20,9 @@ const assignmentSchema = z.object({
   validFrom: z.string().optional(),
   remarks: z.string().optional(),
 });
-
 type AssignmentFormData = z.infer<typeof assignmentSchema>;
-
 const StudentTransportPage: React.FC = () => {
-  // States
+
   const [assignments, setAssignments] = useState<StudentTransportAssignment[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,7 +32,6 @@ const StudentTransportPage: React.FC = () => {
   const [pickupPoints, setPickupPoints] = useState<PickupPoint[]>([]);
   const [filteredPickupPoints, setFilteredPickupPoints] = useState<PickupPoint[]>([]);
 
-  // Form
   const {
     register,
     handleSubmit,
@@ -47,16 +42,13 @@ const StudentTransportPage: React.FC = () => {
   } = useForm<AssignmentFormData>({
     resolver: zodResolver(assignmentSchema),
   });
-
   const selectedRouteId = watch('routeId');
 
-  // Fetch initial data
   useEffect(() => {
     fetchAssignments();
     fetchRoutes();
   }, []);
 
-  // Fetch assignments
   const fetchAssignments = async () => {
     try {
       setLoading(true);
@@ -72,7 +64,6 @@ const StudentTransportPage: React.FC = () => {
     }
   };
 
-  // Fetch routes
   const fetchRoutes = async () => {
     try {
       const response = await transportApi.getRoutes({ isActive: true });
@@ -82,14 +73,12 @@ const StudentTransportPage: React.FC = () => {
     }
   };
 
-  // Search students
   const handleStudentSearch = async (query: string) => {
     setSearchQuery(query);
     if (query.length < 2) {
       setStudents([]);
       return;
     }
-
     try {
       const response = await transportApi.searchStudents(query);
       setStudents(response.data);
@@ -98,7 +87,6 @@ const StudentTransportPage: React.FC = () => {
     }
   };
 
-  // Fetch pickup points when route is selected
   useEffect(() => {
     if (selectedRouteId) {
       fetchRoutePickupPoints(selectedRouteId);
@@ -106,7 +94,6 @@ const StudentTransportPage: React.FC = () => {
       setFilteredPickupPoints([]);
     }
   }, [selectedRouteId]);
-
   const fetchRoutePickupPoints = async (routeId: string) => {
     try {
       const response = await transportApi.getRoutePickupPoints(routeId);
@@ -117,7 +104,6 @@ const StudentTransportPage: React.FC = () => {
     }
   };
 
-  // Submit form
   const onSubmit = async (data: AssignmentFormData) => {
     try {
       await transportApi.assignStudentToTransport(data);
@@ -132,12 +118,10 @@ const StudentTransportPage: React.FC = () => {
     }
   };
 
-  // Deactivate assignment
   const handleDeactivate = async (id: string) => {
     if (!window.confirm('Are you sure you want to deactivate this assignment?')) {
       return;
     }
-
     try {
       await transportApi.deactivateStudentTransport(id);
       toast.success('Assignment deactivated successfully');
@@ -147,7 +131,6 @@ const StudentTransportPage: React.FC = () => {
     }
   };
 
-  // Table columns
   const columns = [
     {
       key: 'student',
@@ -222,10 +205,9 @@ const StudentTransportPage: React.FC = () => {
       ),
     },
   ];
-
   return (
     <div className="p-6">
-      {/* Header */}
+      {}
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Student Transport</h1>
@@ -236,13 +218,11 @@ const StudentTransportPage: React.FC = () => {
           Assign Student
         </Button>
       </div>
-
-      {/* Table */}
+      {}
       <div className="bg-white rounded-lg shadow">
         <Table columns={columns} data={assignments} isLoading={loading} />
       </div>
-
-      {/* Assignment Modal */}
+      {}
       <Modal
         isOpen={isModalOpen}
         onClose={() => {
@@ -255,7 +235,7 @@ const StudentTransportPage: React.FC = () => {
         size="lg"
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Student Search */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Search Student <span className="text-red-500">*</span>
@@ -270,8 +250,7 @@ const StudentTransportPage: React.FC = () => {
                 onChange={(e) => handleStudentSearch(e.target.value)}
               />
             </div>
-            
-            {/* Student Dropdown */}
+            {}
             {students.length > 0 && (
               <div className="mt-2 max-h-48 overflow-y-auto border border-gray-300 rounded-lg">
                 {students.map((student) => (
@@ -301,8 +280,7 @@ const StudentTransportPage: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.studentId.message}</p>
             )}
           </div>
-
-          {/* Route Selection */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Route <span className="text-red-500">*</span>
@@ -322,8 +300,7 @@ const StudentTransportPage: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.routeId.message}</p>
             )}
           </div>
-
-          {/* Pickup Point Selection */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Pickup Point <span className="text-red-500">*</span>
@@ -344,8 +321,7 @@ const StudentTransportPage: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.pickupPointId.message}</p>
             )}
           </div>
-
-          {/* Shift */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Shift
@@ -359,8 +335,7 @@ const StudentTransportPage: React.FC = () => {
               <option value="Evening">Evening</option>
             </select>
           </div>
-
-          {/* Valid From */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Valid From
@@ -371,8 +346,7 @@ const StudentTransportPage: React.FC = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-
-          {/* Remarks */}
+          {}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Remarks
@@ -384,8 +358,7 @@ const StudentTransportPage: React.FC = () => {
               placeholder="Optional notes..."
             />
           </div>
-
-          {/* Info Box */}
+          {}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-800">
               <strong>Note:</strong> When you assign a student to transport, the system will
@@ -397,8 +370,7 @@ const StudentTransportPage: React.FC = () => {
               <li>Set the due date to the 15th of the current month</li>
             </ul>
           </div>
-
-          {/* Actions */}
+          {}
           <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"
@@ -419,5 +391,4 @@ const StudentTransportPage: React.FC = () => {
     </div>
   );
 };
-
 export default StudentTransportPage;

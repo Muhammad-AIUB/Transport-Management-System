@@ -1,5 +1,3 @@
-// src/pages/transport/Route.tsx
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,7 +10,6 @@ import Input from '@/components/common/Input';
 import Modal from '@/components/common/Modal';
 import Table from '@/components/common/Table';
 import type { Route } from '@/types';
-
 const routeSchema = z.object({
   routeName: z.string().min(1, 'Route name is required'),
   routeCode: z.string().optional(),
@@ -21,15 +18,12 @@ const routeSchema = z.object({
   distance: z.number().positive().optional(),
   estimatedDuration: z.number().positive().optional(),
 });
-
 type RouteFormData = z.infer<typeof routeSchema>;
-
 const RoutePage: React.FC = () => {
   const [routes, setRoutes] = useState<Route[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoute, setEditingRoute] = useState<Route | null>(null);
-
   const {
     register,
     handleSubmit,
@@ -38,11 +32,9 @@ const RoutePage: React.FC = () => {
   } = useForm<RouteFormData>({
     resolver: zodResolver(routeSchema),
   });
-
   useEffect(() => {
     fetchRoutes();
   }, []);
-
   const fetchRoutes = async () => {
     try {
       setLoading(true);
@@ -54,7 +46,6 @@ const RoutePage: React.FC = () => {
       setLoading(false);
     }
   };
-
   const onSubmit = async (data: RouteFormData) => {
     try {
       if (editingRoute) {
@@ -72,16 +63,13 @@ const RoutePage: React.FC = () => {
       toast.error(error.response?.data?.message || 'Operation failed');
     }
   };
-
   const handleEdit = (route: Route) => {
     setEditingRoute(route);
     reset(route);
     setIsModalOpen(true);
   };
-
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure?')) return;
-    
     try {
       await transportApi.deleteRoute(id);
       toast.success('Route deleted successfully');
@@ -90,7 +78,6 @@ const RoutePage: React.FC = () => {
       toast.error(error.response?.data?.message || 'Failed to delete');
     }
   };
-
   const columns = [
     { key: 'routeName', label: 'Route Name' },
     { key: 'routeCode', label: 'Code' },
@@ -127,7 +114,6 @@ const RoutePage: React.FC = () => {
       ),
     },
   ];
-
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -137,11 +123,9 @@ const RoutePage: React.FC = () => {
           Add Route
         </Button>
       </div>
-
       <div className="bg-white rounded-lg shadow">
         <Table columns={columns} data={routes} isLoading={loading} />
       </div>
-
       <Modal
         isOpen={isModalOpen}
         onClose={() => {
@@ -188,7 +172,6 @@ const RoutePage: React.FC = () => {
             {...register('estimatedDuration', { valueAsNumber: true })}
             error={errors.estimatedDuration?.message}
           />
-
           <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"
@@ -206,5 +189,4 @@ const RoutePage: React.FC = () => {
     </div>
   );
 };
-
 export default RoutePage;

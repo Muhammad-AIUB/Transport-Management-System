@@ -1,4 +1,3 @@
-// src/types/index.ts
 
 export interface Student {
   id: string;
@@ -9,7 +8,6 @@ export interface Student {
   section?: string;
   rollNumber?: string;
 }
-
 export interface Route {
   id: string;
   routeName: string;
@@ -22,7 +20,6 @@ export interface Route {
   createdAt: string;
   updatedAt: string;
 }
-
 export interface PickupPoint {
   id: string;
   name: string;
@@ -34,7 +31,6 @@ export interface PickupPoint {
   createdAt: string;
   updatedAt: string;
 }
-
 export interface Vehicle {
   id: string;
   vehicleNumber: string;
@@ -45,11 +41,12 @@ export interface Vehicle {
   driverLicense?: string;
   helperName?: string;
   helperPhone?: string;
+  insuranceExpiry?: string;
+  fitnessExpiry?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
-
 export interface TransportFeeMaster {
   id: string;
   routeId?: string;
@@ -62,7 +59,6 @@ export interface TransportFeeMaster {
   createdAt: string;
   updatedAt: string;
 }
-
 export interface RoutePickupPoint {
   id: string;
   routeId: string;
@@ -74,7 +70,6 @@ export interface RoutePickupPoint {
   createdAt: string;
   updatedAt: string;
 }
-
 export interface RouteVehicleAssignment {
   id: string;
   routeId: string;
@@ -89,7 +84,6 @@ export interface RouteVehicleAssignment {
   createdAt: string;
   updatedAt: string;
 }
-
 export interface StudentTransportAssignment {
   id: string;
   studentId: string;
@@ -108,14 +102,12 @@ export interface StudentTransportAssignment {
   createdAt: string;
   updatedAt: string;
 }
-
 export interface PaginationMeta {
   total: number;
   page: number;
   limit: number;
   totalPages: number;
 }
-
 export interface ApiResponse<T> {
   success: boolean;
   message: string;

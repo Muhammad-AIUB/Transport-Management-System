@@ -1,9 +1,6 @@
-// src/App.tsx
-
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import Layout from './components/common/Layout';
 import Dashboard from './pages/Dashboard';
 import RoutePage from './pages/transport/Route';
@@ -18,14 +15,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Redirect root to dashboard */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
-        {/* Main layout with sidebar */}
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
-          
-          {/* Transport Module Routes */}
           <Route path="/transport/routes" element={<RoutePage />} />
           <Route path="/transport/vehicles" element={<VehiclePage />} />
           <Route path="/transport/pickup-points" element={<PickupPointPage />} />
@@ -34,12 +26,8 @@ function App() {
           <Route path="/transport/assign-vehicle" element={<AssignVehiclePage />} />
           <Route path="/transport/student-transport" element={<StudentTransportPage />} />
         </Route>
-
-        {/* 404 fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
-
-      {/* Toast notifications */}
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -55,5 +43,4 @@ function App() {
     </BrowserRouter>
   );
 }
-
 export default App;

@@ -1,23 +1,14 @@
-// src/utils/constants.ts
-
-/**
- * Application-wide constants
- */
-
 export const APP_NAME = 'Transport Management System';
-
 export const SHIFTS = [
   { value: 'MORNING', label: 'Morning' },
   { value: 'EVENING', label: 'Evening' },
   { value: 'BOTH', label: 'Both' },
 ] as const;
-
 export const TRANSPORT_STATUS = [
   { value: 'ACTIVE', label: 'Active', color: 'green' },
   { value: 'INACTIVE', label: 'Inactive', color: 'gray' },
   { value: 'SUSPENDED', label: 'Suspended', color: 'red' },
 ] as const;
-
 export const FEE_STATUS = [
   { value: 'PENDING', label: 'Pending', color: 'yellow' },
   { value: 'PAID', label: 'Paid', color: 'green' },
@@ -25,28 +16,23 @@ export const FEE_STATUS = [
   { value: 'OVERDUE', label: 'Overdue', color: 'red' },
   { value: 'WAIVED', label: 'Waived', color: 'gray' },
 ] as const;
-
 export const VEHICLE_TYPES = [
   { value: 'BUS', label: 'Bus' },
   { value: 'VAN', label: 'Van' },
   { value: 'MINI_BUS', label: 'Mini Bus' },
   { value: 'CAR', label: 'Car' },
 ] as const;
-
 export const ACADEMIC_YEARS = [
   '2023-2024',
   '2024-2025',
   '2025-2026',
   '2026-2027',
 ];
-
 export const CURRENT_ACADEMIC_YEAR = '2024-2025';
-
 export const PAGINATION_DEFAULT = {
   page: 1,
   limit: 10,
 };
-
 export const ROUTES = {
   HOME: '/',
   DASHBOARD: '/dashboard',
@@ -60,7 +46,6 @@ export const ROUTES = {
     STUDENT_TRANSPORT: '/transport/student-transport',
   },
 } as const;
-
 export const NAV_ITEMS = [
   {
     name: 'Dashboard',
@@ -104,9 +89,6 @@ export const NAV_ITEMS = [
   },
 ] as const;
 
-/**
- * Status badge color classes
- */
 export const getStatusColor = (status: string): string => {
   const colors: Record<string, string> = {
     ACTIVE: 'bg-green-100 text-green-800',

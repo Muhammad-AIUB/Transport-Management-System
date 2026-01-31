@@ -3,20 +3,13 @@ import asyncHandler from '../../../utils/asyncHandler';
 import ApiResponse from '../../../utils/ApiResponse';
 import routeService from '../services/route.service';
 
-/**
- * Create a new route
- */
 export const createRoute = asyncHandler(async (req: Request, res: Response) => {
   const route = await routeService.createRoute(req.body);
-  
   res.status(201).json(
     new ApiResponse(201, route, 'Route created successfully')
   );
 });
 
-/**
- * Get all routes with optional filters
- */
 export const getAllRoutes = asyncHandler(async (req: Request, res: Response) => {
   const filters = {
     isActive: req.query.isActive === 'true' ? true : req.query.isActive === 'false' ? false : undefined,
@@ -24,42 +17,28 @@ export const getAllRoutes = asyncHandler(async (req: Request, res: Response) => 
     page: parseInt(req.query.page as string) || 1,
     limit: parseInt(req.query.limit as string) || 10,
   };
-
   const result = await routeService.getAllRoutes(filters);
-  
   res.status(200).json(
     new ApiResponse(200, result, 'Routes fetched successfully')
   );
 });
 
-/**
- * Get a route by ID with pickup points and vehicle assignments
- */
 export const getRouteById = asyncHandler(async (req: Request, res: Response) => {
   const route = await routeService.getRouteById(req.params.id);
-  
   res.status(200).json(
     new ApiResponse(200, route, 'Route fetched successfully')
   );
 });
 
-/**
- * Update a route
- */
 export const updateRoute = asyncHandler(async (req: Request, res: Response) => {
   const updated = await routeService.updateRoute(req.params.id, req.body);
-  
   res.status(200).json(
     new ApiResponse(200, updated, 'Route updated successfully')
   );
 });
 
-/**
- * Delete (deactivate) a route
- */
 export const deleteRoute = asyncHandler(async (req: Request, res: Response) => {
   const result = await routeService.deleteRoute(req.params.id);
-  
   res.status(200).json(
     new ApiResponse(200, result, 'Route deactivated successfully')
   );

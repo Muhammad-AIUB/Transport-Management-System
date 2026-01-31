@@ -1,4 +1,3 @@
-// src/pages/transport/AssignVehicle.tsx
 
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -13,7 +12,6 @@ import Modal from '../../components/common/Modal';
 import Table from '../../components/common/Table';
 import { SHIFTS, getStatusColor } from '../../utils/constants';
 import type { Route, Vehicle, RouteVehicleAssignment } from '../../types';
-
 const assignVehicleSchema = z.object({
   routeId: z.string().min(1, 'Route is required'),
   vehicleId: z.string().min(1, 'Vehicle is required'),
@@ -21,16 +19,13 @@ const assignVehicleSchema = z.object({
   validFrom: z.string().min(1, 'Valid from date is required'),
   validTo: z.string().optional(),
 });
-
 type AssignVehicleFormData = z.infer<typeof assignVehicleSchema>;
-
 const AssignVehiclePage: React.FC = () => {
   const [assignments, setAssignments] = useState<RouteVehicleAssignment[]>([]);
   const [routes, setRoutes] = useState<Route[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -42,11 +37,9 @@ const AssignVehiclePage: React.FC = () => {
       validFrom: new Date().toISOString().split('T')[0],
     },
   });
-
   useEffect(() => {
     fetchData();
   }, []);
-
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -65,7 +58,6 @@ const AssignVehiclePage: React.FC = () => {
       setLoading(false);
     }
   };
-
   const onSubmit = async (data: AssignVehicleFormData) => {
     try {
       await transportApi.assignVehicleToRoute({
@@ -82,10 +74,8 @@ const AssignVehiclePage: React.FC = () => {
       toast.error(error.response?.data?.message || 'Failed to assign vehicle');
     }
   };
-
   const handleDeactivate = async (id: string) => {
     if (!window.confirm('Are you sure you want to deactivate this assignment?')) return;
-
     try {
       await transportApi.deactivateRouteVehicle(id);
       toast.success('Assignment deactivated successfully');
@@ -94,7 +84,6 @@ const AssignVehiclePage: React.FC = () => {
       toast.error(error.response?.data?.message || 'Failed to deactivate');
     }
   };
-
   const closeModal = () => {
     setIsModalOpen(false);
     reset({
@@ -105,7 +94,6 @@ const AssignVehiclePage: React.FC = () => {
       validTo: '',
     });
   };
-
   const columns = [
     {
       key: 'route',
@@ -173,10 +161,9 @@ const AssignVehiclePage: React.FC = () => {
       ),
     },
   ];
-
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Assign Vehicles to Routes</h1>
@@ -187,8 +174,7 @@ const AssignVehiclePage: React.FC = () => {
           Assign Vehicle
         </Button>
       </div>
-
-      {/* Stats Cards */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-lg shadow p-4">
           <div className="flex items-center">
@@ -224,13 +210,11 @@ const AssignVehiclePage: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Table */}
+      {}
       <div className="bg-white rounded-lg shadow">
         <Table columns={columns} data={assignments} isLoading={loading} />
       </div>
-
-      {/* Modal */}
+      {}
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -256,7 +240,6 @@ const AssignVehiclePage: React.FC = () => {
               <p className="text-red-500 text-sm mt-1">{errors.routeId.message}</p>
             )}
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Vehicle <span className="text-red-500">*</span>
@@ -276,7 +259,6 @@ const AssignVehiclePage: React.FC = () => {
               <p className="text-red-500 text-sm mt-1">{errors.vehicleId.message}</p>
             )}
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Shift
@@ -293,7 +275,6 @@ const AssignVehiclePage: React.FC = () => {
               ))}
             </select>
           </div>
-
           <Input
             label="Valid From"
             type="date"
@@ -301,14 +282,12 @@ const AssignVehiclePage: React.FC = () => {
             error={errors.validFrom?.message}
             required
           />
-
           <Input
             label="Valid To (Optional)"
             type="date"
             {...register('validTo')}
             error={errors.validTo?.message}
           />
-
           <div className="flex justify-end gap-3 pt-4">
             <Button type="button" variant="secondary" onClick={closeModal}>
               Cancel
@@ -322,5 +301,4 @@ const AssignVehiclePage: React.FC = () => {
     </div>
   );
 };
-
 export default AssignVehiclePage;

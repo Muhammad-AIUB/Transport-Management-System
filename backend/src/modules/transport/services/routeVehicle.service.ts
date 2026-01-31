@@ -1,7 +1,6 @@
 
 import prisma from '../../../config/database';
 import ApiError from '../../../utils/ApiError';
-
 interface AssignVehicleToRouteDTO {
   routeId: string;
   vehicleId: string;
@@ -9,25 +8,20 @@ interface AssignVehicleToRouteDTO {
   validTo?: Date;
   shift?: string;
 }
-
 class RouteVehicleService {
   async assignVehicleToRoute(data: AssignVehicleToRouteDTO) {
     const route = await prisma.route.findUnique({
       where: { id: data.routeId },
     });
-
     if (!route) {
       throw new ApiError(404, 'Route not found');
     }
-
     const vehicle = await prisma.vehicle.findUnique({
       where: { id: data.vehicleId },
     });
-
     if (!vehicle) {
       throw new ApiError(404, 'Vehicle not found');
     }
-
     const existing = await prisma.routeVehicleAssignment.findFirst({
       where: {
         routeId: data.routeId,
@@ -36,11 +30,9 @@ class RouteVehicleService {
         isActive: true,
       },
     });
-
     if (existing) {
       throw new ApiError(409, 'This vehicle is already assigned to this route for this shift');
     }
-
     const assignment = await prisma.routeVehicleAssignment.create({
       data: {
         routeId: data.routeId,
@@ -54,10 +46,8 @@ class RouteVehicleService {
         vehicle: true,
       },
     });
-
     return assignment;
   }
-
   async getAllAssignments(filters: {
     routeId?: string;
     vehicleId?: string;
@@ -68,12 +58,10 @@ class RouteVehicleService {
     const page = filters.page || 1;
     const limit = filters.limit || 10;
     const skip = (page - 1) * limit;
-
     const where: any = {};
     if (filters.routeId) where.routeId = filters.routeId;
     if (filters.vehicleId) where.vehicleId = filters.vehicleId;
     if (filters.isActive !== undefined) where.isActive = filters.isActive;
-
     const [assignments, total] = await Promise.all([
       prisma.routeVehicleAssignment.findMany({
         where,
@@ -87,7 +75,6 @@ class RouteVehicleService {
       }),
       prisma.routeVehicleAssignment.count({ where }),
     ]);
-
     return {
       assignments,
       pagination: {
@@ -98,16 +85,13 @@ class RouteVehicleService {
       },
     };
   }
-
   async deactivateAssignment(id: string) {
     const assignment = await prisma.routeVehicleAssignment.findUnique({
       where: { id },
     });
-
     if (!assignment) {
       throw new ApiError(404, 'Assignment not found');
     }
-
     const updated = await prisma.routeVehicleAssignment.update({
       where: { id },
       data: {
@@ -115,9 +99,7 @@ class RouteVehicleService {
         validTo: new Date(),
       },
     });
-
     return updated;
   }
 }
-
 export default new RouteVehicleService();

@@ -1,4 +1,3 @@
-// src/pages/transport/RoutePickupPoint.tsx
 
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -11,15 +10,12 @@ import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
 import type { Route, PickupPoint, RoutePickupPoint } from '../../types';
-
 const addPickupSchema = z.object({
   pickupPointId: z.string().min(1, 'Pickup point is required'),
   sequenceOrder: z.number().min(1, 'Sequence order must be at least 1'),
   estimatedTime: z.string().optional(),
 });
-
 type AddPickupFormData = z.infer<typeof addPickupSchema>;
-
 const RoutePickupPointPage: React.FC = () => {
   const [routes, setRoutes] = useState<Route[]>([]);
   const [pickupPoints, setPickupPoints] = useState<PickupPoint[]>([]);
@@ -27,7 +23,6 @@ const RoutePickupPointPage: React.FC = () => {
   const [selectedRoute, setSelectedRoute] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -37,11 +32,9 @@ const RoutePickupPointPage: React.FC = () => {
   } = useForm<AddPickupFormData>({
     resolver: zodResolver(addPickupSchema),
   });
-
   useEffect(() => {
     fetchInitialData();
   }, []);
-
   useEffect(() => {
     if (selectedRoute) {
       fetchRoutePickupPoints(selectedRoute);
@@ -49,7 +42,6 @@ const RoutePickupPointPage: React.FC = () => {
       setRoutePickupPoints([]);
     }
   }, [selectedRoute]);
-
   const fetchInitialData = async () => {
     try {
       setLoading(true);
@@ -65,7 +57,6 @@ const RoutePickupPointPage: React.FC = () => {
       setLoading(false);
     }
   };
-
   const fetchRoutePickupPoints = async (routeId: string) => {
     try {
       setLoading(true);
@@ -77,13 +68,11 @@ const RoutePickupPointPage: React.FC = () => {
       setLoading(false);
     }
   };
-
   const onSubmit = async (data: AddPickupFormData) => {
     if (!selectedRoute) {
       toast.error('Please select a route first');
       return;
     }
-
     try {
       await transportApi.addPickupPointToRoute({
         routeId: selectedRoute,
@@ -98,10 +87,8 @@ const RoutePickupPointPage: React.FC = () => {
       toast.error(error.response?.data?.message || 'Failed to add pickup point');
     }
   };
-
   const handleRemove = async (id: string) => {
     if (!window.confirm('Remove this pickup point from the route?')) return;
-
     try {
       await transportApi.removePickupPointFromRoute(id);
       toast.success('Pickup point removed from route');
@@ -110,7 +97,6 @@ const RoutePickupPointPage: React.FC = () => {
       toast.error(error.response?.data?.message || 'Failed to remove pickup point');
     }
   };
-
   const handleUpdateSequence = async (id: string, newOrder: number) => {
     try {
       await transportApi.updateRoutePickupPoint(id, { sequenceOrder: newOrder });
@@ -119,37 +105,31 @@ const RoutePickupPointPage: React.FC = () => {
       toast.error('Failed to update sequence');
     }
   };
-
   const closeModal = () => {
     setIsModalOpen(false);
     reset({});
   };
-
   const openModal = () => {
-    // Set next sequence order
-    const nextOrder = routePickupPoints.length > 0 
-      ? Math.max(...routePickupPoints.map(rp => rp.sequenceOrder)) + 1 
+
+    const nextOrder = routePickupPoints.length > 0
+      ? Math.max(...routePickupPoints.map(rp => rp.sequenceOrder)) + 1
       : 1;
     setValue('sequenceOrder', nextOrder);
     setIsModalOpen(true);
   };
 
-  // Get pickup points not already assigned to the selected route
   const availablePickupPoints = pickupPoints.filter(
     pp => !routePickupPoints.some(rpp => rpp.pickupPointId === pp.id)
   );
-
   const selectedRouteData = routes.find(r => r.id === selectedRoute);
-
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Route Pickup Points</h1>
         <p className="text-gray-600">Assign and order pickup points for each route</p>
       </div>
-
-      {/* Route Selection */}
+      {}
       <div className="bg-white rounded-lg shadow p-6">
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Select Route
@@ -167,11 +147,10 @@ const RoutePickupPointPage: React.FC = () => {
           ))}
         </select>
       </div>
-
-      {/* Route Details & Pickup Points */}
+      {}
       {selectedRoute && (
         <div className="bg-white rounded-lg shadow">
-          {/* Route Info Header */}
+          {}
           <div className="p-6 border-b border-gray-200">
             <div className="flex justify-between items-start">
               <div className="flex items-center">
@@ -193,8 +172,7 @@ const RoutePickupPointPage: React.FC = () => {
               </Button>
             </div>
           </div>
-
-          {/* Pickup Points List */}
+          {}
           <div className="p-6">
             {loading ? (
               <div className="text-center py-8 text-gray-500">Loading...</div>
@@ -267,8 +245,7 @@ const RoutePickupPointPage: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Add Pickup Point Modal */}
+      {}
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -299,7 +276,6 @@ const RoutePickupPointPage: React.FC = () => {
               </p>
             )}
           </div>
-
           <Input
             label="Stop Order"
             type="number"
@@ -308,14 +284,12 @@ const RoutePickupPointPage: React.FC = () => {
             error={errors.sequenceOrder?.message}
             required
           />
-
           <Input
             label="Estimated Time (Optional)"
             {...register('estimatedTime')}
             error={errors.estimatedTime?.message}
             placeholder="e.g., 8:00 AM"
           />
-
           <div className="flex justify-end gap-3 pt-4">
             <Button type="button" variant="secondary" onClick={closeModal}>
               Cancel
@@ -329,5 +303,4 @@ const RoutePickupPointPage: React.FC = () => {
     </div>
   );
 };
-
 export default RoutePickupPointPage;

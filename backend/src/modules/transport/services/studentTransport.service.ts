@@ -1,7 +1,6 @@
 
 import prisma from '../../../config/database';
 import ApiError from '../../../utils/ApiError';
-
 interface AssignStudentTransportDTO {
   studentId: string;
   routeId: string;
@@ -11,24 +10,17 @@ interface AssignStudentTransportDTO {
   shift?: string;
   createdBy?: string;
 }
-
 class StudentTransportService {
-
   async assignStudentToTransport(data: AssignStudentTransportDTO) {
-   
     const student = await prisma.student.findUnique({
       where: { id: data.studentId },
     });
-
     if (!student) {
       throw new ApiError(404, 'Student not found');
     }
-
     if (!student.isActive) {
       throw new ApiError(400, 'Student is not active');
     }
-
- 
     const route = await prisma.route.findUnique({
       where: { id: data.routeId },
       include: {
@@ -37,41 +29,31 @@ class StudentTransportService {
         },
       },
     });
-
     if (!route) {
       throw new ApiError(404, 'Route not found');
     }
-
     if (!route.isActive) {
       throw new ApiError(400, 'Route is not active');
     }
-
-
     if (route.pickupPoints.length === 0) {
       throw new ApiError(
         400,
         'Selected pickup point is not part of this route'
       );
     }
-
-   
     const existingAssignment = await prisma.studentTransportAssignment.findFirst({
       where: {
         studentId: data.studentId,
         status: 'ACTIVE',
       },
     });
-
     if (existingAssignment) {
       throw new ApiError(
         400,
         'Student already has an active transport assignment. Please deactivate it first.'
       );
     }
-
-
     const currentAcademicYear = process.env.CURRENT_ACADEMIC_YEAR || '2024-2025';
-    
     const transportFee = await prisma.transportFeeMaster.findFirst({
       where: {
         routeId: data.routeId,
@@ -79,19 +61,15 @@ class StudentTransportService {
         isActive: true,
       },
     });
-
     if (!transportFee) {
       throw new ApiError(
         404,
         'No transport fee structure found for this route and academic year'
       );
     }
-
-  
     let transportFeeType = await prisma.feeType.findFirst({
       where: { name: 'Transport Fee' },
     });
-
     if (!transportFeeType) {
       transportFeeType = await prisma.feeType.create({
         data: {
@@ -101,10 +79,7 @@ class StudentTransportService {
         },
       });
     }
-
-
     const result = await prisma.$transaction(async (tx: any) => {
-     
       const assignment = await tx.studentTransportAssignment.create({
         data: {
           studentId: data.studentId,
@@ -123,8 +98,6 @@ class StudentTransportService {
           pickupPoint: true,
         },
       });
-
-      
       let feeMaster = await tx.feeMaster.findFirst({
         where: {
           feeTypeId: transportFeeType!.id,
@@ -132,7 +105,6 @@ class StudentTransportService {
           isActive: true,
         },
       });
-
       if (!feeMaster) {
         feeMaster = await tx.feeMaster.create({
           data: {
@@ -143,13 +115,9 @@ class StudentTransportService {
           },
         });
       }
-
-   
       const currentDate = new Date();
-      const currentMonth = currentDate.getMonth() + 1; 
+      const currentMonth = currentDate.getMonth() + 1;
       const currentYear = currentDate.getFullYear();
-
-
       const existingFee = await tx.studentFeeAssignment.findFirst({
         where: {
           studentId: data.studentId,
@@ -158,12 +126,9 @@ class StudentTransportService {
           year: currentYear,
         },
       });
-
       let feeAssignment;
       if (!existingFee) {
-      
         const dueDate = new Date(currentYear, currentMonth - 1, 15);
-
         feeAssignment = await tx.studentFeeAssignment.create({
           data: {
             studentId: data.studentId,
@@ -177,18 +142,14 @@ class StudentTransportService {
           },
         });
       }
-
       return {
         assignment,
         feeAssignment,
         message: 'Student assigned to transport and fee generated successfully',
       };
     });
-
     return result;
   }
-
- 
   async getAllAssignments(filters: {
     studentId?: string;
     routeId?: string;
@@ -199,13 +160,10 @@ class StudentTransportService {
     const page = filters.page || 1;
     const limit = filters.limit || 10;
     const skip = (page - 1) * limit;
-
     const where: any = {};
-
     if (filters.studentId) where.studentId = filters.studentId;
     if (filters.routeId) where.routeId = filters.routeId;
     if (filters.status) where.status = filters.status;
-
     const [assignments, total] = await Promise.all([
       prisma.studentTransportAssignment.findMany({
         where,
@@ -241,7 +199,6 @@ class StudentTransportService {
       }),
       prisma.studentTransportAssignment.count({ where }),
     ]);
-
     return {
       assignments,
       pagination: {
@@ -252,8 +209,6 @@ class StudentTransportService {
       },
     };
   }
-
- 
   async getAssignmentById(id: string) {
     const assignment = await prisma.studentTransportAssignment.findUnique({
       where: { id },
@@ -263,18 +218,13 @@ class StudentTransportService {
         pickupPoint: true,
       },
     });
-
     if (!assignment) {
       throw new ApiError(404, 'Transport assignment not found');
     }
-
     return assignment;
   }
-
- 
   async updateAssignment(id: string, data: Partial<AssignStudentTransportDTO>) {
     await this.getAssignmentById(id);
-
     const updated = await prisma.studentTransportAssignment.update({
       where: { id },
       data: {
@@ -288,14 +238,10 @@ class StudentTransportService {
         pickupPoint: true,
       },
     });
-
     return updated;
   }
-
-
   async deactivateAssignment(id: string) {
     await this.getAssignmentById(id);
-
     const updated = await prisma.studentTransportAssignment.update({
       where: { id },
       data: {
@@ -303,11 +249,8 @@ class StudentTransportService {
         validTo: new Date(),
       },
     });
-
     return updated;
   }
-
-
   async searchStudents(query: string) {
     const students = await prisma.student.findMany({
       where: {
@@ -329,9 +272,7 @@ class StudentTransportService {
       },
       take: 10,
     });
-
     return students;
   }
 }
-
 export default new StudentTransportService();

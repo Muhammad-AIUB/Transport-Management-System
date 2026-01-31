@@ -1,20 +1,15 @@
-// src/components/common/Table.tsx
-
 import React from 'react';
-
 interface Column {
   key: string;
   label: string;
   render?: (value: any, row: any) => React.ReactNode;
 }
-
 interface TableProps {
   columns: Column[];
   data: any[];
   isLoading?: boolean;
   emptyMessage?: string;
 }
-
 const Table: React.FC<TableProps> = ({
   columns,
   data,
@@ -28,7 +23,6 @@ const Table: React.FC<TableProps> = ({
       </div>
     );
   }
-
   if (data.length === 0) {
     return (
       <div className="text-center py-12 text-gray-500">
@@ -36,7 +30,6 @@ const Table: React.FC<TableProps> = ({
       </div>
     );
   }
-
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -69,5 +62,4 @@ const Table: React.FC<TableProps> = ({
     </div>
   );
 };
-
 export default Table;
