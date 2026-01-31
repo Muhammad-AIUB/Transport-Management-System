@@ -1,7 +1,8 @@
-import prisma from '../../config/database';
-import bcrypt from 'bcryptjs';
-import { ApiError } from '../../utils/ApiError';
-import { generateToken } from '../../middlewares/auth';
+import prisma from "../../config/database";
+import bcrypt from "bcryptjs";
+import { ApiError } from "../../utils/ApiError";
+import { generateToken } from "../../middlewares/auth";
+import { Role } from "../../types";
 
 export const login = async (email: string, password: string) => {
   const user = await prisma.user.findUnique({
@@ -9,22 +10,22 @@ export const login = async (email: string, password: string) => {
   });
 
   if (!user) {
-    throw ApiError.unauthorized('Invalid email or password');
+    throw ApiError.unauthorized("Invalid email or password");
   }
 
   if (!user.isActive) {
-    throw ApiError.unauthorized('Account is inactive');
+    throw ApiError.unauthorized("Account is inactive");
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
-    throw ApiError.unauthorized('Invalid email or password');
+    throw ApiError.unauthorized("Invalid email or password");
   }
 
   const token = generateToken({
     id: user.id,
     email: user.email,
-    role: user.role,
+    role: user.role as Role,
   });
 
   return {
