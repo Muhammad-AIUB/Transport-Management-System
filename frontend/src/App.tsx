@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Layout from './components/common/Layout';
+import ProtectedRoute from './components/common/ProtectedRoute';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import RoutePage from './pages/transport/Route';
 import VehiclePage from './pages/transport/Vehicle';
@@ -15,8 +17,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/login" element={<Login />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route element={<Layout />}>
+        <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/transport/routes" element={<RoutePage />} />
           <Route path="/transport/vehicles" element={<VehiclePage />} />
@@ -26,7 +29,7 @@ function App() {
           <Route path="/transport/assign-vehicle" element={<AssignVehiclePage />} />
           <Route path="/transport/student-transport" element={<StudentTransportPage />} />
         </Route>
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
       <ToastContainer
         position="top-right"

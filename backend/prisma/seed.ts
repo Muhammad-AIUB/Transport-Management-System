@@ -1,8 +1,23 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
+  const hashedPassword = await bcrypt.hash('admin123', 10);
+  await prisma.user.upsert({
+    where: { email: 'admin@admin.com' },
+    update: {},
+    create: {
+      username: 'admin',
+      email: 'admin@admin.com',
+      password: hashedPassword,
+      firstName: 'Admin',
+      lastName: 'User',
+      role: 'ADMIN',
+    },
+  });
+
   await prisma.feeType.upsert({
     where: { name: 'Transport Fee' },
     update: {},
@@ -14,8 +29,10 @@ async function main() {
   });
 
   await Promise.all([
-    prisma.student.create({
-      data: {
+    prisma.student.upsert({
+      where: { admissionNumber: 'STD001' },
+      update: {},
+      create: {
         admissionNumber: 'STD001',
         firstName: 'Rahim',
         lastName: 'Ahmed',
@@ -29,8 +46,10 @@ async function main() {
         address: 'Dhaka, Bangladesh',
       },
     }),
-    prisma.student.create({
-      data: {
+    prisma.student.upsert({
+      where: { admissionNumber: 'STD002' },
+      update: {},
+      create: {
         admissionNumber: 'STD002',
         firstName: 'Fatima',
         lastName: 'Khan',
@@ -46,33 +65,28 @@ async function main() {
     }),
   ]);
 
-  const pickupPoints = await Promise.all([
-    prisma.pickupPoint.create({
-      data: {
-        name: 'Mohammadpur Bus Stop',
-        address: 'Mohammadpur, Dhaka',
-        landmark: 'Near Mohammadpur Market',
-      },
-    }),
-    prisma.pickupPoint.create({
-      data: {
-        name: 'Dhanmondi 27',
-        address: 'Road 27, Dhanmondi, Dhaka',
-        landmark: 'Near Rabindra Sarobar',
-      },
-    }),
-    prisma.pickupPoint.create({
-      data: {
-        name: 'Mirpur 10',
-        address: 'Mirpur 10, Dhaka',
-        landmark: 'Near Mirpur 10 Circle',
-      },
-    }),
-  ]);
+  const pickupPointNames = ['Mohammadpur Bus Stop', 'Dhanmondi 27', 'Mirpur 10'];
+  const pickupPointAddresses = [
+    { address: 'Mohammadpur, Dhaka', landmark: 'Near Mohammadpur Market' },
+    { address: 'Road 27, Dhanmondi, Dhaka', landmark: 'Near Rabindra Sarobar' },
+    { address: 'Mirpur 10, Dhaka', landmark: 'Near Mirpur 10 Circle' },
+  ];
+  const pickupPoints = [];
+  for (let i = 0; i < pickupPointNames.length; i++) {
+    let pp = await prisma.pickupPoint.findFirst({ where: { name: pickupPointNames[i] } });
+    if (!pp) {
+      pp = await prisma.pickupPoint.create({
+        data: { name: pickupPointNames[i], ...pickupPointAddresses[i] },
+      });
+    }
+    pickupPoints.push(pp);
+  }
 
   await Promise.all([
-    prisma.vehicle.create({
-      data: {
+    prisma.vehicle.upsert({
+      where: { vehicleNumber: 'DHK-GA-11-1234' },
+      update: {},
+      create: {
         vehicleNumber: 'DHK-GA-11-1234',
         vehicleType: 'Bus',
         capacity: 40,
@@ -83,8 +97,10 @@ async function main() {
         helperPhone: '01912345679',
       },
     }),
-    prisma.vehicle.create({
-      data: {
+    prisma.vehicle.upsert({
+      where: { vehicleNumber: 'DHK-GA-11-5678' },
+      update: {},
+      create: {
         vehicleNumber: 'DHK-GA-11-5678',
         vehicleType: 'Van',
         capacity: 15,
@@ -98,8 +114,10 @@ async function main() {
   ]);
 
   const routes = await Promise.all([
-    prisma.route.create({
-      data: {
+    prisma.route.upsert({
+      where: { routeName: 'Route A - Mohammadpur to School' },
+      update: {},
+      create: {
         routeName: 'Route A - Mohammadpur to School',
         routeCode: 'RTA',
         startPoint: 'Mohammadpur',
@@ -108,8 +126,10 @@ async function main() {
         estimatedDuration: 45,
       },
     }),
-    prisma.route.create({
-      data: {
+    prisma.route.upsert({
+      where: { routeName: 'Route B - Dhanmondi to School' },
+      update: {},
+      create: {
         routeName: 'Route B - Dhanmondi to School',
         routeCode: 'RTB',
         startPoint: 'Dhanmondi',
@@ -120,32 +140,35 @@ async function main() {
     }),
   ]);
 
-  await prisma.routePickupPoint.createMany({
-    data: [
-      {
-        routeId: routes[0].id,
-        pickupPointId: pickupPoints[0].id,
-        sequenceOrder: 1,
-        estimatedTime: '07:00 AM',
-      },
-      {
-        routeId: routes[0].id,
-        pickupPointId: pickupPoints[2].id,
-        sequenceOrder: 2,
-        estimatedTime: '07:20 AM',
-      },
-      {
-        routeId: routes[1].id,
-        pickupPointId: pickupPoints[1].id,
-        sequenceOrder: 1,
-        estimatedTime: '07:10 AM',
-      },
-    ],
-  });
+  try {
+    await prisma.routePickupPoint.createMany({
+      data: [
+        {
+          routeId: routes[0].id,
+          pickupPointId: pickupPoints[0].id,
+          sequenceOrder: 1,
+          estimatedTime: '07:00 AM',
+        },
+        {
+          routeId: routes[0].id,
+          pickupPointId: pickupPoints[2].id,
+          sequenceOrder: 2,
+          estimatedTime: '07:20 AM',
+        },
+        {
+          routeId: routes[1].id,
+          pickupPointId: pickupPoints[1].id,
+          sequenceOrder: 1,
+          estimatedTime: '07:10 AM',
+        },
+      ],
+    });
+  } catch {}
 
   const currentYear = process.env.CURRENT_ACADEMIC_YEAR || '2024-2025';
 
-  await prisma.transportFeeMaster.createMany({
+  try {
+    await prisma.transportFeeMaster.createMany({
     data: [
       {
         routeId: routes[0].id,
@@ -161,6 +184,7 @@ async function main() {
       },
     ],
   });
+  } catch {}
 
   console.log('✅ Database seeded successfully!');
 }
