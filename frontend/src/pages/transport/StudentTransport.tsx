@@ -39,8 +39,17 @@ const StudentTransportPage: React.FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<AssignmentFormData>({
     resolver: zodResolver(assignmentSchema),
+    defaultValues: {
+      studentId: '',
+      routeId: '',
+      pickupPointId: '',
+      shift: '',
+      validFrom: '',
+      remarks: '',
+    },
   });
   const selectedRouteId = watch('routeId');
+  const selectedStudentId = watch('studentId');
 
   useEffect(() => {
     fetchAssignments();
@@ -73,6 +82,7 @@ const StudentTransportPage: React.FC = () => {
 
   const handleStudentSearch = async (query: string) => {
     setSearchQuery(query);
+    setValue('studentId', '');
     if (query.length < 2) {
       setStudents([]);
       return;
@@ -83,6 +93,12 @@ const StudentTransportPage: React.FC = () => {
     } catch (error: any) {
       toast.error('Failed to search students');
     }
+  };
+
+  const handleSelectStudent = (student: Student) => {
+    setValue('studentId', student.id);
+    setSearchQuery(`${student.firstName} ${student.lastName} (${student.admissionNumber})`);
+    setStudents([]);
   };
 
   useEffect(() => {
@@ -103,6 +119,7 @@ const StudentTransportPage: React.FC = () => {
   };
 
   const onSubmit = async (data: AssignmentFormData) => {
+    if (!data.studentId) return;
     try {
       await transportApi.assignStudentToTransport(data);
       toast.success('✅ Student assigned successfully! Fee automatically generated.');
@@ -220,7 +237,6 @@ const StudentTransportPage: React.FC = () => {
       <div className="bg-navy-800/50 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden">
         <Table columns={columns} data={assignments} isLoading={loading} />
       </div>
-      {}
       <Modal
         isOpen={isModalOpen}
         onClose={() => {
@@ -256,13 +272,7 @@ const StudentTransportPage: React.FC = () => {
                     key={student.id}
                     type="button"
                     className="w-full text-left px-4 py-3 hover:bg-white/5 border-b border-white/5 last:border-b-0 transition-colors"
-                    onClick={() => {
-                      setValue('studentId', student.id);
-                      setSearchQuery(
-                        `${student.firstName} ${student.lastName} (${student.admissionNumber})`
-                      );
-                      setStudents([]);
-                    }}
+                    onClick={() => handleSelectStudent(student)}
                   >
                     <div className="font-medium text-white">
                       {student.firstName} {student.lastName}
@@ -380,7 +390,7 @@ const StudentTransportPage: React.FC = () => {
             >
               Cancel
             </Button>
-            <Button type="submit" isLoading={isSubmitting}>
+            <Button type="submit" isLoading={isSubmitting} disabled={!selectedStudentId}>
               Assign Student
             </Button>
           </div>

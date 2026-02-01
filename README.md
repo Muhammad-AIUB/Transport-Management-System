@@ -21,45 +21,28 @@ A comprehensive Transport Management Module for School Management Systems built 
 
 ---
 
-## Quick Start with Docker
+## Quick Start with Docker (One Command)
+
+**যে কেউ repo clone করে শুধু নিচের কমান্ড দিলেই project run করতে পারবে।** Migrations ও seed অটোমেটিক চলে।
 
 ### Prerequisites
 
-- Docker Desktop installed and running
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
 - Git
 
-### 1. Clone and Configure
+### Run the Project
 
 ```bash
-# Clone the repository
 git clone <repository-url>
 cd Transport-Management-System
-
-# Create environment file
-cp .env.example .env
-```
-
-### 2. Start the Application
-
-```bash
-# Start all services (PostgreSQL, Backend, Frontend)
 docker-compose up -d
-
-# View logs
-docker-compose logs -f
 ```
 
-### 3. Run Database Migrations
+প্রথমবার একটু সময় লাগতে পারে (build + DB migration + seed)। লগ দেখতে: `docker-compose logs -f`
 
-```bash
-# Apply Prisma migrations
-docker-compose exec backend npx prisma migrate deploy
+`.env` ফাইল দরকার নেই — Docker Compose এ default values আছে। চাইলে `cp .env.example .env` দিয়ে কাস্টম করতে পারবেন।
 
-# Seed the database with sample data
-docker-compose exec backend npx prisma db seed
-```
-
-### 4. Access the Application
+### Access the Application
 
 | Service | URL | Description |
 |---------|-----|-------------|
@@ -67,7 +50,9 @@ docker-compose exec backend npx prisma db seed
 | **Backend API** | http://localhost:5000/api | REST API |
 | **API Health** | http://localhost:5000/api/health | Health check endpoint |
 
-### 5. Connect to Database (DBeaver/pgAdmin)
+**Login (after first run):** `admin@admin.com` / `admin123` (seed data)
+
+### Connect to Database (DBeaver/pgAdmin)
 
 | Setting | Value |
 |---------|-------|
@@ -77,7 +62,7 @@ docker-compose exec backend npx prisma db seed
 | Username | `tms_user` |
 | Password | `tms_password` |
 
-### 6. Stop the Application
+### Stop the Application
 
 ```bash
 # Stop all services
