@@ -1,0 +1,27 @@
+# Ignore node_modules to avoid overwriting image-installed dependencies
+node_modules
+**/node_modules
+
+# Build outputs
+dist
+**/dist
+
+# Local env files
+.env
+.env.*
+
+# Logs
+npm-debug.log*
+logs
+
+# Editor files
+.vscode
+.idea
+.DS_Store
+
+# Docker files
+docker-compose.override.yml
+
+# Misc
+*.tgz
+*.log
