@@ -10,8 +10,9 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm ci
+# Ensure dev dependencies are installed during build (so tsc is available)
+ENV NPM_CONFIG_PRODUCTION=false
+RUN npm ci --include=dev && npm install -g typescript
 
 # Generate Prisma client
 RUN npx prisma generate
