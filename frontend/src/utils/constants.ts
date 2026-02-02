@@ -44,6 +44,7 @@ export const ROUTES = {
     ROUTE_PICKUP_POINTS: '/transport/route-pickup-points',
     ASSIGN_VEHICLE: '/transport/assign-vehicle',
     STUDENT_TRANSPORT: '/transport/student-transport',
+    STUDENTS: '/transport/students',
   },
 } as const;
 export const NAV_ITEMS = [
@@ -81,6 +82,11 @@ export const NAV_ITEMS = [
     name: 'Assign Vehicle',
     path: ROUTES.TRANSPORT.ASSIGN_VEHICLE,
     icon: 'Link',
+  },
+  {
+    name: 'Students',
+    path: ROUTES.TRANSPORT.STUDENTS,
+    icon: 'UserPlus',
   },
   {
     name: 'Student Transport',

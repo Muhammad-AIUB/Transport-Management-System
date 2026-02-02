@@ -12,6 +12,7 @@ import FeeMasterPage from './pages/transport/FeeMaster';
 import RoutePickupPointPage from './pages/transport/RoutePickupPoint';
 import AssignVehiclePage from './pages/transport/AssignVehicle';
 import StudentTransportPage from './pages/transport/StudentTransport';
+import StudentPage from './pages/transport/Student';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/transport/route-pickup-points" element={<RoutePickupPointPage />} />
           <Route path="/transport/assign-vehicle" element={<AssignVehiclePage />} />
           <Route path="/transport/student-transport" element={<StudentTransportPage />} />
+          <Route path="/transport/students" element={<StudentPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

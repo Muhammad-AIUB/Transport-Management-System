@@ -4,9 +4,17 @@ export interface Student {
   admissionNumber: string;
   firstName: string;
   lastName: string;
+  email?: string;
+  phone?: string;
   class: string;
   section?: string;
   rollNumber?: string;
+  parentName?: string;
+  parentPhone?: string;
+  address?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 export interface Route {
   id: string;

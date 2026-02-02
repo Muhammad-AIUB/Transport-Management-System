@@ -137,6 +137,26 @@ class TransportAPI {
     });
     return response.data;
   }
+
+  async getStudents(params?: any) {
+    const response = await api.get<ApiResponse<{ students: Student[]; pagination: any }>>('/transport/students', { params });
+    return response.data;
+  }
+
+  async createStudent(data: Partial<Student>) {
+    const response = await api.post<ApiResponse<Student>>('/transport/students', data);
+    return response.data;
+  }
+
+  async updateStudent(id: string, data: Partial<Student>) {
+    const response = await api.put<ApiResponse<Student>>(`/transport/students/${id}`, data);
+    return response.data;
+  }
+
+  async deleteStudent(id: string) {
+    const response = await api.delete<ApiResponse<any>>(`/transport/students/${id}`);
+    return response.data;
+  }
 }
 const transportApiInstance = new TransportAPI();
 export { transportApiInstance as transportApi };

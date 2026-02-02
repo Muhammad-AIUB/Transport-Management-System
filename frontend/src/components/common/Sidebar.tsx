@@ -9,6 +9,7 @@ import {
   GitBranch,
   Link,
   Users,
+  UserPlus,
   X,
 } from 'lucide-react';
 import { NAV_ITEMS, APP_NAME } from '../../utils/constants';
@@ -26,6 +27,7 @@ const iconMap: Record<string, React.ElementType> = {
   GitBranch,
   Link,
   Users,
+  UserPlus,
 };
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   return (

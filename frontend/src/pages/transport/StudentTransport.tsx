@@ -27,6 +27,9 @@ const StudentTransportPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [students, setStudents] = useState<Student[]>([]);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false);
   const [routes, setRoutes] = useState<Route[]>([]);
   const [filteredPickupPoints, setFilteredPickupPoints] = useState<PickupPoint[]>([]);
 
@@ -36,6 +39,7 @@ const StudentTransportPage: React.FC = () => {
     watch,
     reset,
     setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<AssignmentFormData>({
     resolver: zodResolver(assignmentSchema),
@@ -49,7 +53,6 @@ const StudentTransportPage: React.FC = () => {
     },
   });
   const selectedRouteId = watch('routeId');
-  const selectedStudentId = watch('studentId');
 
   useEffect(() => {
     fetchAssignments();
@@ -82,23 +85,38 @@ const StudentTransportPage: React.FC = () => {
 
   const handleStudentSearch = async (query: string) => {
     setSearchQuery(query);
-    setValue('studentId', '');
+    setSelectedStudent(null);
+    setValue('studentId', '', { shouldValidate: true, shouldDirty: true });
     if (query.length < 2) {
       setStudents([]);
+      setSearchPerformed(false);
       return;
     }
+    setIsSearching(true);
     try {
       const response = await transportApi.searchStudents(query);
       setStudents(response.data);
+      setSearchPerformed(true);
     } catch (error: any) {
       toast.error('Failed to search students');
+    } finally {
+      setIsSearching(false);
     }
   };
 
   const handleSelectStudent = (student: Student) => {
-    setValue('studentId', student.id);
+    setSelectedStudent(student);
+    setValue('studentId', String(student.id), { shouldValidate: true, shouldDirty: true });
     setSearchQuery(`${student.firstName} ${student.lastName} (${student.admissionNumber})`);
     setStudents([]);
+  };
+
+  const clearStudentSelection = () => {
+    setSelectedStudent(null);
+    setSearchQuery('');
+    setValue('studentId', '', { shouldValidate: true, shouldDirty: true });
+    setStudents([]);
+    setSearchPerformed(false);
   };
 
   useEffect(() => {
@@ -125,8 +143,10 @@ const StudentTransportPage: React.FC = () => {
       toast.success('✅ Student assigned successfully! Fee automatically generated.');
       setIsModalOpen(false);
       reset();
+      setSelectedStudent(null);
       setStudents([]);
       setSearchQuery('');
+      setSearchPerformed(false);
       fetchAssignments();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to assign student');
@@ -242,36 +262,64 @@ const StudentTransportPage: React.FC = () => {
         onClose={() => {
           setIsModalOpen(false);
           reset();
+          setSelectedStudent(null);
           setStudents([]);
           setSearchQuery('');
+          setSearchPerformed(false);
         }}
         title="Assign Student to Transport"
         size="lg"
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Student Search */}
+          <input type="hidden" {...register('studentId')} />
+          {/* Student Search + Select */}
           <div>
             <label className="block text-sm font-medium text-navy-200 mb-2">
               Search Student <span className="text-primary-400">*</span>
             </label>
+            <p className="text-xs text-navy-400 mb-2">
+              Type to search by name or admission number. You must select a student from the results.
+            </p>
             <div className="relative">
               <Search className="absolute left-4 top-3.5 w-4 h-4 text-navy-400" />
               <input
                 type="text"
-                className="w-full pl-11 pr-4 py-3 bg-navy-800/50 border border-white/10 rounded-xl text-white placeholder-navy-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200"
-                placeholder="Type admission number or name..."
+                className={`w-full pl-11 py-3 bg-navy-800/50 border border-white/10 rounded-xl text-white placeholder-navy-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200 ${selectedStudent ? 'pr-10' : 'pr-4'}`}
+                placeholder="Type to search, then select from results..."
                 value={searchQuery}
                 onChange={(e) => handleStudentSearch(e.target.value)}
               />
+              {selectedStudent && (
+                <button
+                  type="button"
+                  onClick={clearStudentSelection}
+                  className="absolute right-3 top-3.5 p-1 text-navy-400 hover:text-white rounded"
+                  title="Clear selection"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
-            {/* Student dropdown */}
-            {students.length > 0 && (
+            {isSearching && (
+              <div className="mt-2 px-4 py-3 bg-navy-800/95 border border-white/10 rounded-xl">
+                <p className="text-sm text-navy-300">Searching...</p>
+              </div>
+            )}
+            {!isSearching && searchPerformed && students.length === 0 && !selectedStudent && (
+              <div className="mt-2 px-4 py-3 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                <p className="text-sm text-amber-400">
+                  No students found for "{searchQuery}". Try searching by admission number (e.g., STD001) or name (e.g., Rahim, Muhammad).
+                </p>
+              </div>
+            )}
+            {!isSearching && students.length > 0 && (
               <div className="mt-2 max-h-48 overflow-y-auto bg-navy-800/95 backdrop-blur-xl border border-white/10 rounded-xl">
+                <p className="px-4 py-2 text-xs text-navy-400 border-b border-white/5">Click to select a student:</p>
                 {students.map((student) => (
                   <button
                     key={student.id}
                     type="button"
-                    className="w-full text-left px-4 py-3 hover:bg-white/5 border-b border-white/5 last:border-b-0 transition-colors"
+                    className="w-full text-left px-4 py-3 hover:bg-primary-500/20 border-b border-white/5 last:border-b-0 transition-colors"
                     onClick={() => handleSelectStudent(student)}
                   >
                     <div className="font-medium text-white">
@@ -284,7 +332,15 @@ const StudentTransportPage: React.FC = () => {
                 ))}
               </div>
             )}
-            {errors.studentId && (
+            {selectedStudent && (
+              <div className="mt-2 px-4 py-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center gap-2">
+                <span className="text-emerald-400">✓</span>
+                <p className="text-sm text-emerald-400">
+                  Selected: {selectedStudent.firstName} {selectedStudent.lastName} ({selectedStudent.admissionNumber})
+                </p>
+              </div>
+            )}
+            {errors.studentId && !selectedStudent && (
               <p className="mt-2 text-sm text-red-400">{errors.studentId.message}</p>
             )}
           </div>
@@ -390,7 +446,7 @@ const StudentTransportPage: React.FC = () => {
             >
               Cancel
             </Button>
-            <Button type="submit" isLoading={isSubmitting} disabled={!selectedStudentId}>
+            <Button type="submit" isLoading={isSubmitting}>
               Assign Student
             </Button>
           </div>

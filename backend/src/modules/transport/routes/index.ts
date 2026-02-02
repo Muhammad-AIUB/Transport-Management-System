@@ -7,6 +7,7 @@ import * as routeController from '../controllers/route.controller';
 import * as routePickupPointController from '../controllers/routePickupPoint.controller';
 import * as routeVehicleController from '../controllers/routeVehicle.controller';
 import * as studentTransportController from '../controllers/studentTransport.controller';
+import * as studentController from '../controllers/student.controller';
 const router = Router();
 
 router.post('/fee-master', feeMasterController.createFeeMaster);
@@ -48,4 +49,11 @@ router.get('/student-transport/:id', studentTransportController.getAssignmentByI
 router.put('/student-transport/:id', studentTransportController.updateAssignment);
 router.put('/student-transport/:id/deactivate', studentTransportController.deactivateAssignment);
 router.get('/students/search', studentTransportController.searchStudents);
+
+router.post('/students', studentController.createStudent);
+router.get('/students', studentController.getAllStudents);
+router.get('/students/:id', studentController.getStudentById);
+router.put('/students/:id', studentController.updateStudent);
+router.delete('/students/:id', studentController.deleteStudent);
+
 export default router;
