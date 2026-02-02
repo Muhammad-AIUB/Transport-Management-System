@@ -137,7 +137,7 @@ const Login: React.FC = () => {
 
         {/* Footer */}
         <p className="text-center text-navy-500 text-xs mt-6">
-          Transport Management System v1.0
+          Transport Management System
         </p>
       </div>
     </div>

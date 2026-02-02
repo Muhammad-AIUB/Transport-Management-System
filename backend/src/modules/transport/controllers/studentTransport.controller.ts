@@ -2,8 +2,26 @@ import { Request, Response } from 'express';
 import asyncHandler from '../../../utils/asyncHandler';
 import ApiResponse from '../../../utils/ApiResponse';
 import studentTransportService from '../services/studentTransport.service';
+
+/** Ensure Prisma gets full ISO-8601 DateTime; date-only strings (e.g. "2026-03-05") cause "premature end of input". */
+function toISOOrUndefined(value: string | Date | null | undefined): string | undefined {
+  if (value == null || value === '') return undefined;
+  const d = typeof value === 'string' ? new Date(value) : value;
+  return isNaN(d.getTime()) ? undefined : d.toISOString();
+}
+
 export const assignStudent = asyncHandler(async (req: Request, res: Response) => {
-  const result = await studentTransportService.assignStudentToTransport(req.body);
+  const body = req.body as Record<string, unknown>;
+  const payload = {
+    studentId: body.studentId as string,
+    routeId: body.routeId as string,
+    pickupPointId: body.pickupPointId as string,
+    validFrom: toISOOrUndefined(body.validFrom as string) ?? new Date().toISOString(),
+    validTo: toISOOrUndefined(body.validTo as string),
+    shift: typeof body.shift === 'string' && body.shift.trim() ? body.shift.trim() : undefined,
+    createdBy: typeof body.createdBy === 'string' && body.createdBy.trim() ? body.createdBy.trim() : undefined,
+  };
+  const result = await studentTransportService.assignStudentToTransport(payload);
   res.status(201).json(
     new ApiResponse(201, result, 'Student assigned to transport successfully')
   );

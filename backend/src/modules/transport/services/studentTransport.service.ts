@@ -1,14 +1,21 @@
 
 import prisma from '../../../config/database';
 import ApiError from '../../../utils/ApiError';
+/** Normalize date input (string or Date) to Date for Prisma. Date-only strings (e.g. "2026-02-20") become midnight UTC. */
+function toDate(value: string | Date | null | undefined): Date | undefined {
+  if (value == null || value === '') return undefined;
+  const d = value instanceof Date ? value : new Date(value as string);
+  return isNaN(d.getTime()) ? undefined : d;
+}
+
 interface AssignStudentTransportDTO {
   studentId: string;
   routeId: string;
   pickupPointId: string;
-  validFrom?: Date;
-  validTo?: Date;
-  shift?: string;
-  createdBy?: string;
+  validFrom?: string | Date;
+  validTo?: string | Date | null;
+  shift?: string | null;
+  createdBy?: string | null;
 }
 class StudentTransportService {
   async assignStudentToTransport(data: AssignStudentTransportDTO) {
@@ -80,17 +87,24 @@ class StudentTransportService {
       });
     }
     const result = await prisma.$transaction(async (tx: any) => {
+      // Prisma expects full ISO-8601 DateTime; date-only strings (e.g. "2026-02-19") cause "premature end of input".
+      // Always pass Date instances so the client serializes them correctly.
+      const validFrom = toDate(data.validFrom) ?? new Date();
+      const validTo = toDate(data.validTo) ?? undefined;
+      const shift = data.shift?.trim() || undefined;
+      const createdBy = data.createdBy?.trim() || undefined;
+
       const assignment = await tx.studentTransportAssignment.create({
         data: {
           studentId: data.studentId,
           routeId: data.routeId,
           pickupPointId: data.pickupPointId,
-          validFrom: data.validFrom || new Date(),
-          validTo: data.validTo,
-          shift: data.shift,
+          validFrom,
+          validTo,
+          shift,
           monthlyFee: transportFee.monthlyFee,
           status: 'ACTIVE',
-          createdBy: data.createdBy,
+          createdBy,
         },
         include: {
           student: true,
