@@ -3,10 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  // Generate query engine binaries for the local OS (native) and for Linux
-  // - `linux-musl` is required for alpine-based Docker images
-  // - `debian-openssl-1.1.x` is useful if you use Debian-based node images
-  binaryTargets = ["native", "linux-musl", "debian-openssl-1.1.x"]
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
 datasource db {
