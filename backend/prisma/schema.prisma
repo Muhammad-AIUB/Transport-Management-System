@@ -11,10 +11,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================
-// EXISTING MODELS (আগে থেকে আছে ধরে নিচ্ছি)
-// ============================================
-
 model Student {
   id                    String                  @id @default(uuid())
   admissionNumber       String                  @unique
@@ -258,11 +254,6 @@ model StudentTransportAssignment {
   @@index([pickupPointId])
   @@index([status])
 }
-
-// ============================================
-// RBAC MODELS (Optional but Recommended)
-// ============================================
-
 model User {
   id                    String                  @id @default(uuid())
   username              String                  @unique
