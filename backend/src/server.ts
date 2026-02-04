@@ -1,12 +1,15 @@
 
 import dotenv from 'dotenv';
+
 dotenv.config();
+
 import app from './app';
 import prisma from './config/database';
-const PORT = process.env.PORT || 5000;
+
+const PORT = Number(process.env.PORT);
 
 const server = app.listen(PORT, async () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${process.env.PORT}`);
   console.log(`📚 Environment: ${process.env.NODE_ENV}`);
   
   try {

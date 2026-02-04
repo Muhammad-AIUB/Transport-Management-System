@@ -6,13 +6,20 @@ import transportRoutes from './modules/transport/routes';
 import authRoutes from './modules/auth/auth.routes';
 import errorHandler from './middlewares/errorHandler';
 import ApiError from './utils/ApiError';
+
 const app: Application = express();
 
 app.use(helmet());
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || ['http://localhost:3000', 'http://localhost:5173'],
-  credentials: true,
-}));
+
+if (process.env.NODE_ENV === 'development') {
+  app.use(
+    cors({
+      origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+      credentials: true,
+    })
+  );
+}
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
